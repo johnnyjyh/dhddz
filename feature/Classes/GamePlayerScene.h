@@ -26,6 +26,8 @@ public:
 			bool createAndBindBullet();
 			//ÍË³ö°´Å¥
 
+			bool initBackGround();
+
 			
 	
 
@@ -37,6 +39,9 @@ public:
 
 			LayerTower *_layerTower;
 			LayerMonster *_layerMonster;
+
+			float _scalesizeX;
+			float _scalesizeY;
 		
 
 

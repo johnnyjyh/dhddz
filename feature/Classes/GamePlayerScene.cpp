@@ -6,6 +6,7 @@ int GamePlayerScene::gamePath[7] = {};
 
 GamePlayerScene::GamePlayerScene()
 {
+			
 }
 
 
@@ -42,35 +43,61 @@ bool GamePlayerScene::init()
 			srand((unsigned int)(time(NULL)));
 			//预加载动画
 			loadAnimate();
-			//塔初始化-->子弹预加载	
-			createTower();
-	
-			//怪兽初始化
-			createMonster();
-	
-			//添加子弹
-			createAndBindBullet();
-			static int __i = 0;
-			schedule([&] (float dt){			
-						++__i;
-						_layerTower->moveTower(__i);
-						if (__i == 4)
+			
+			//添加background
+			initBackGround();
+			//初始化消消乐模块
+			
+			/*for (int i = 0; i < 7; ++i)
+			{
+						for (int j = 0; j < 5; ++j)
 						{
-									__i = -1;
-						}
-			}, 2.0f,-1,2.0f,"moveTower");
-			
-			//添加触摸
-			scheduleUpdate();
+									auto spr2 = Sprite::createWithSpriteFrameName("operating_ purple.png");
+									spr2->setAnchorPoint(Vec2(0, 0));
+									spr2->setPosition(Vec2((getSingleTiledSize.x)*i, (getSingleTiledSize.y+(tileinterval-95 * _scalesizeX))*j));
+									spr2->setScale(_scalesizeX);
 
-			auto menuitem = MenuItemImage::create("CloseNormal.png", "CloseSelected.png", [&](Ref *) {
-						Director::getInstance()->end();
-			});
-			menuitem->setScale(2.0f);
-			auto menu = Menu::create(menuitem,NULL);
-			menu->setPosition(Vec2(winSize.width - menuitem->getBoundingBox().size.width / 2, winSize.height - menuitem->getBoundingBox().size.height / 2));
+									log("tiled:%lf ,%lf", spr2->getTextureRect().getMaxX(), spr2->getTextureRect().getMaxY());
+									addChild(spr2, 20);
+
+						}
+			}*/
+
 			
-			addChild(menu);
+			
+			
+			
+			
+			
+			////塔初始化-->子弹预加载	
+			//createTower();
+	
+			////怪兽初始化
+			//createMonster();
+	
+			////添加子弹
+			//createAndBindBullet();
+			//static int __i = 0;
+			//schedule([&] (float dt){			
+			//			++__i;
+			//			_layerTower->moveTower(__i);
+			//			if (__i == 4)
+			//			{
+			//						__i = -1;
+			//			}
+			//}, 2.0f,-1,2.0f,"moveTower");
+			//
+			////添加触摸
+			//scheduleUpdate();
+
+			//auto menuitem = MenuItemImage::create("CloseNormal.png", "CloseSelected.png", [&](Ref *) {
+			//			Director::getInstance()->end();
+			//});
+			//menuitem->setScale(2.0f);
+			//auto menu = Menu::create(menuitem,NULL);
+			//menu->setPosition(Vec2(winSize.width - menuitem->getBoundingBox().size.width / 2, winSize.height - menuitem->getBoundingBox().size.height / 2));
+			//
+			//addChild(menu);
 			return true;
 }
 
@@ -118,6 +145,29 @@ bool GamePlayerScene::createAndBindBullet()
 			return ret;
 }
 
+bool GamePlayerScene::initBackGround()
+{
+			auto ret = false;
+			do
+			{
+						auto spr =  Sprite::create("operating_scenes.jpg");
+						spr->setAnchorPoint(Vec2(0,0));
+						auto dx = spr->getTextureRect().getMaxX();
+						auto dy = spr->getTextureRect().getMaxY();
+						auto wx = winSize.width;
+						auto wy = winSize.height;
+						_scalesizeX = wx / dx;
+						_scalesizeY = wy / dy;
+						spr->setScaleX((float)(wx / dx));
+						spr->setScaleY((float)(wy / dy));
+						log("%lf ,%lf", spr->getTextureRect().getMaxX(), spr->getTextureRect().getMaxY());
+						spr->setPosition(Vec2::ZERO);
+						addChild(spr, 0);
+						ret = true;
+			} while (0);
+			return true;
+}
+
 
 
 
@@ -131,7 +181,9 @@ bool GamePlayerScene::loadAnimate()
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tower/tower_bullet_burst.plist");
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("pumpkin_walk/pumpkin_walk.plist");
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("pumpkin_rest/pumpkin_reset.plist");						
-						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("pumpkin_death/pumpkin_death.plist");						
+						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("pumpkin_death/pumpkin_death.plist");			
+						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tiled/tiled.plist");
+						
 						ret = true;
 			} while (0);
 			
