@@ -32,7 +32,16 @@ enum Score
 			monsterScore1 = 1,
 };
 
-
+enum CellsColor
+{
+			red = 0,
+			pink,
+			yellow,
+			green,
+			blue,
+			blueand,
+			purple,
+};
 
 namespace TowerItem
 {
@@ -56,6 +65,8 @@ public:
 						return draw;
 			}
 };
+
+
 
 
 #endif
