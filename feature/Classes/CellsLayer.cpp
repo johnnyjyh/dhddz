@@ -10,9 +10,19 @@ CellsLayer::~CellsLayer()
 
 bool CellsLayer::init()
 {
+			if (!Layer::init())
+			{
+						return false;
+			}
 			auto ret = false;
 			do 
 			{
+#ifdef _Test_
+						std::string shader1 = FileUtils::getInstance()->getStringFromFile("example_GreyScale.fsh");
+						GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader1.c_str()), "grey_effect");
+						std::string shader2 = FileUtils::getInstance()->getStringFromFile("example_LightScale.fsh");
+						GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader2.c_str()), "light_effect");
+#endif //_Test_
 						//初始化格子模块
 						initCells();
 						displayCells();
@@ -20,6 +30,14 @@ bool CellsLayer::init()
 						//添加可变长十字链表
 						//添加寻路算法
 						
+						//auto eventDispa = Director::getInstance()->getEventDispatcher();
+						auto listen = EventListenerTouchOneByOne::create();
+						listen->onTouchBegan = CC_CALLBACK_2(CellsLayer::onTouchBegan, this);
+						listen->onTouchMoved = CC_CALLBACK_2(CellsLayer::onTouchMoved, this);
+						listen->onTouchEnded = CC_CALLBACK_2(CellsLayer::onTouchEnded, this);
+						listen->onTouchCancelled = CC_CALLBACK_2(CellsLayer::onTouchCancelled, this);
+						_eventDispatcher->addEventListenerWithSceneGraphPriority(listen,this);
+						listen->setSwallowTouches(false);
 						ret = true;
 			} while (0);
 			return ret;
@@ -93,6 +111,7 @@ void CellsLayer::displayCells()
 						
 						return;
 			}
+
 			int i = 0, j = 0;
 			for (auto cells : _displayCell)
 			{
@@ -125,10 +144,21 @@ bool CellsLayer::isCanDestroyCells()
 
 void CellsLayer::destroyCells()
 {
+
 }
 
 void CellsLayer::supplyCells()
 {
+			if (_supCell.size() >= 7)
+			{
+						return;
+			}
+			for (int col = _supCell.size(); col < 7; ++col)
+			{
+						auto randcol = static_cast<CellsColor>(rand() % 7);
+						auto cel = createCells(randcol);
+						_supCell.push_back(cel);
+			}
 }
 
 bool CellsLayer::isPreCells()
@@ -155,19 +185,91 @@ void CellsLayer::setCellsToScreen(int col, int row)
 {
 }
 
+void CellsLayer::checkCells()
+{
+}
+
+void CellsLayer::showLightCells(CellsColor col)
+{
+			for (auto cells : _displayCell)
+			{
+						for (auto cell : cells)
+						{
+									if (cell->getColor()!=col)
+									{
+												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
+												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("grey_effect"));																					
+									}
+						}
+			}
+}
+
+void CellsLayer::recoverLightCells(CellsColor col)
+{
+			for (auto cells : _displayCell)
+			{
+						for (auto cell : cells)
+						{
+									if (cell->getColor() != col)
+									{
+												//GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
+												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("normal_effect"));
+									}
+						}
+			}
+}
+
 bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 {
-			return false;
+			auto ret = false;
+			do 
+			{
+						//检索触摸地方，如果是格子，继续
+						{
+									for (auto cells : _displayCell)
+									{
+												for (auto cell : cells)
+												{
+															if (cell->getBoundingBox().containsPoint(touch->getLocation()))
+															{
+																		showLightCells(cell->getColor());
+																		
+																		return true;
+															}
+												}
+									}
+						}
+						//检索出显示格子中相同颜色的格子，高亮
+
+						ret = true;
+			} while (0);
+			return ret;
 }
 
 void CellsLayer::onTouchMoved(Touch * touch, Event * unused_event)
 {
+			//移动中，如果没有选择格子，那么不做任何事情
+			//如果是格子，判断颜色是否相同，如果相同，加入链表，并继续判断，否则不作处理
 }
 
 void CellsLayer::onTouchEnded(Touch * touch, Event * unused_event)
 {
+			//结算，如果所选格子都是相同颜色，那么消除格子，清除链表，并检查格子，然后补充格子，然后补充备用格子
+			{
+						for (auto cells : _displayCell)
+						{
+									for (auto cell : cells)
+									{
+												if (cell->getBoundingBox().containsPoint(touch->getStartLocation()))
+												{
+															recoverLightCells(cell->getColor());														
+												}
+									}
+						}
+			}
 }
 
 void CellsLayer::onTouchCancelled(Touch * touch, Event * unused_event)
 {
+			//取消，那么清除链表，恢复选择格子为FALSE；
 }

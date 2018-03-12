@@ -166,7 +166,7 @@ bool GamePlayerScene::initBackGround()
 						_scalesizeY = wy / dy;
 						spr->setScaleX((float)(wx / dx));
 						spr->setScaleY((float)(wy / dy));
-						log("%lf ,%lf", spr->getTextureRect().getMaxX(), spr->getTextureRect().getMaxY());
+						//log("%lf ,%lf", spr->getTextureRect().getMaxX(), spr->getTextureRect().getMaxY());
 						spr->setPosition(Vec2::ZERO);
 						addChild(spr, 0,"backGround");
 						ret = true;
