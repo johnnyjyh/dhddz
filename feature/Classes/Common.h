@@ -1,6 +1,6 @@
 #ifndef __Common_H__
 #define __Common_H__
-//#define _Test_
+#define _Test_
 #include "cocos2d.h"
 #include "cocos-ext.h"
 USING_NS_CC_EXT;

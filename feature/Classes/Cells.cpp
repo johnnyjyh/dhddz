@@ -31,6 +31,7 @@ void Cells::bindCellsSprite(Sprite * sp, CellsColor col, bool isSel)
 			_instance = sp;
 			_col = col;
 			_isSelected = isSel;
+			addChild(sp,30);
 }
 
 Sprite *Cells::getSprite()

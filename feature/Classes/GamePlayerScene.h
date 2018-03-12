@@ -4,6 +4,7 @@
 #include "LayerMonster.h"
 #include "LayerTower.h"
 #include "LayerBullet.h"
+#include "CellsLayer.h"
 
 class GamePlayerScene :
 			public Layer

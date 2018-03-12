@@ -14,6 +14,8 @@ bool CellsLayer::init()
 			do 
 			{
 						//初始化格子模块
+						initCells();
+						displayCells();
 						//添加动态数组
 						//添加可变长十字链表
 						//添加寻路算法
@@ -62,23 +64,21 @@ bool CellsLayer::initCells()
 			{
 
 						for (int row = 0; row < 5; ++row)
-						{
-									Vector<Cells *>bakCelVec;
+						{									
 									for (int col = 0; col < 7; ++col)
 									{
-												auto randcol = static_cast<CellsColor>(rand() % 7);
-												
+												auto randcol = static_cast<CellsColor>(rand() % 7);											
 												auto cel = createCells(randcol);
-												bakCelVec.pushBack(cel);
+												_supDisplayCell[row].push_back(cel);
 									}
-									_displayCell.pushBack(bakCelVec);
+									_displayCell.push_back(_supDisplayCell[row]);
 						}
 						
 						for (int col = 0; col < 7; ++col)
 						{
 									auto randcol = static_cast<CellsColor>(rand() % 7);
 									auto cel = createCells(randcol);
-									_supCell.pushBack(cel);
+									_supCell.push_back(cel);
 						}
 
 						ret = true;
@@ -90,7 +90,29 @@ void CellsLayer::displayCells()
 {
 			if (!isPreCells())
 			{
+						
 						return;
+			}
+			int i = 0, j = 0;
+			for (auto cells : _displayCell)
+			{
+						j = 0;
+						for (auto cell : cells)
+						{
+									
+#ifdef _Test_
+
+									cell->getSprite()->setScale(0.5);
+									
+#endif //_Test_
+									cell->getSprite()->setAnchorPoint(Vec2::ZERO);
+									cell->setPosition(Vec2((getSingleTiledSize.x)*j, (getSingleTiledSize.y + (tileinterval - 95 * 0.5))*i));
+									
+								
+									addChild(cell,30);
+									++j;
+						}
+						++i;
 			}
 
 

@@ -43,8 +43,9 @@ public:
 
 
 
-			Vector<Vector<Cells *>> _displayCell;
-			Vector<Cells *> _supCell;
+			std::vector<std::vector<Cells *>> _displayCell;
+			std::vector<Cells *> _supCell;
+			std::vector<Cells *> _supDisplayCell[5];
 			std::list<Cells *> _desCell;
 };
 

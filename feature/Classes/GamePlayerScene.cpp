@@ -48,6 +48,12 @@ bool GamePlayerScene::init()
 			initBackGround();
 			//初始化消消乐模块
 			
+			{
+						auto cellLayer = CellsLayer::create();
+						//cellLayer->setAnchorPoint(Vec2::ZERO);
+						addChild(cellLayer);
+			}
+
 			/*for (int i = 0; i < 7; ++i)
 			{
 						for (int j = 0; j < 5; ++j)
@@ -90,14 +96,14 @@ bool GamePlayerScene::init()
 			////添加触摸
 			//scheduleUpdate();
 
-			//auto menuitem = MenuItemImage::create("CloseNormal.png", "CloseSelected.png", [&](Ref *) {
-			//			Director::getInstance()->end();
-			//});
-			//menuitem->setScale(2.0f);
-			//auto menu = Menu::create(menuitem,NULL);
-			//menu->setPosition(Vec2(winSize.width - menuitem->getBoundingBox().size.width / 2, winSize.height - menuitem->getBoundingBox().size.height / 2));
-			//
-			//addChild(menu);
+			auto menuitem = MenuItemImage::create("CloseNormal.png", "CloseSelected.png", [&](Ref *) {
+						Director::getInstance()->end();
+			});
+			menuitem->setScale(1.0f);
+			auto menu = Menu::create(menuitem, NULL);
+			menu->setPosition(Vec2(winSize.width - menuitem->getBoundingBox().size.width / 2, winSize.height - menuitem->getBoundingBox().size.height / 2));
+
+			addChild(menu);
 			return true;
 }
 
@@ -162,7 +168,7 @@ bool GamePlayerScene::initBackGround()
 						spr->setScaleY((float)(wy / dy));
 						log("%lf ,%lf", spr->getTextureRect().getMaxX(), spr->getTextureRect().getMaxY());
 						spr->setPosition(Vec2::ZERO);
-						addChild(spr, 0);
+						addChild(spr, 0,"backGround");
 						ret = true;
 			} while (0);
 			return true;
