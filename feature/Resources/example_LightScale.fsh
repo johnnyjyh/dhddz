@@ -7,7 +7,25 @@ varying vec2 v_texCoord;
 
 void main(void)
 {
+
+	
+	//vec4 normalColor = v_fragmentColor * texture2D(CC_Texture0, v_texCoord);  
+    //normalColor *= vec4(0.8, 0.8, 0.8, 0.9);  
+    
+    //gl_FragColor = normalColor;  
+	
 	vec4 c = texture2D(CC_Texture0, v_texCoord);
-	gl_FragColor.xyz = vec3(0.01*c.r + 0.10*c.g + 0.89*c.b);
-	gl_FragColor.w = c.w;
+
+    float greyNum = 1.2;
+
+    vec4 final = c;
+
+    final.r = c.r * greyNum;
+
+    //final.g = c.g * greyNum;
+
+    final.b = c.b * greyNum;
+
+    gl_FragColor = final;
+	
 }

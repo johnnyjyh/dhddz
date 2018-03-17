@@ -31,8 +31,12 @@ public:
 			void setCellsToScreen(int col, int row);
 
 			void checkCells();
-			void showLightCells(CellsColor col);
-			void recoverLightCells(CellsColor col);
+
+
+			void showLightCells(CellsColor col);  //shader light
+			void recoverLightCells(CellsColor col);//recover light
+
+
 
 
 			//以下四个继承来的虚函数用于来集成控制函数

@@ -198,7 +198,12 @@ void CellsLayer::showLightCells(CellsColor col)
 									if (cell->getColor()!=col)
 									{
 												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
-												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("grey_effect"));																					
+												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("grey_effect"));														
+									}
+									else
+									{
+												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "dis_normal_effect");
+												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("light_effect"));
 									}
 						}
 			}
@@ -214,6 +219,10 @@ void CellsLayer::recoverLightCells(CellsColor col)
 									{
 												//GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("normal_effect"));
+									}
+									else
+									{
+												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("dis_normal_effect"));
 									}
 						}
 			}
