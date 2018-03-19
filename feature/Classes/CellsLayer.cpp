@@ -43,6 +43,7 @@ bool CellsLayer::init()
 			return ret;
 }
 
+<<<<<<< HEAD
 Cells * CellsLayer::createCells(int col)
 {
 			auto cel = Cells::create();
@@ -79,6 +80,37 @@ Cells * CellsLayer::createCells(int col)
 						
 			}
 			log("%d", col);
+=======
+Cells * CellsLayer::createCells(CellsColor col)
+{
+			auto cel = Cells::create();
+			switch (col)
+			{
+			case red:
+						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_red.png"), col, false);
+						break;
+			case pink:
+						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_pink.png"), col, false);
+						break;
+			case yellow:
+						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_yellow.png"), col, false);
+						break;
+			case green:
+						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_ green.png"), col, false);
+						break;
+			case blue:
+						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_blue.png"), col, false);
+						break;
+			case blueand:
+						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_blueand.png"), col, false);
+						break;
+			case purple:
+						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_ purple.png"), col, false);
+						break;
+			default:
+						break;
+			}
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 			return cel;
 }
 
@@ -92,10 +124,15 @@ bool CellsLayer::initCells()
 						{									
 									for (int col = 0; col < 7; ++col)
 									{
+<<<<<<< HEAD
 												auto randcol =(rand() % 100);											
 												auto cel = createCells(randcol);
 												cel->setRow(row);
 												cel->setColumn(col);
+=======
+												auto randcol = static_cast<CellsColor>(rand() % 7);											
+												auto cel = createCells(randcol);
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 												_supDisplayCell[row].push_back(cel);
 									}
 									_displayCell.push_back(_supDisplayCell[row]);
@@ -103,7 +140,11 @@ bool CellsLayer::initCells()
 						
 						for (int col = 0; col < 7; ++col)
 						{
+<<<<<<< HEAD
 									auto randcol =(rand() % 100);
+=======
+									auto randcol = static_cast<CellsColor>(rand() % 7);
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 									auto cel = createCells(randcol);
 									_supCell.push_back(cel);
 						}
@@ -121,10 +162,17 @@ void CellsLayer::displayCells()
 						return;
 			}
 
+<<<<<<< HEAD
 		
 			for (auto cells : _displayCell)
 			{
 						
+=======
+			int i = 0, j = 0;
+			for (auto cells : _displayCell)
+			{
+						j = 0;
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 						for (auto cell : cells)
 						{
 									
@@ -133,6 +181,7 @@ void CellsLayer::displayCells()
 									cell->getSprite()->setScale(0.5);
 									
 #endif //_Test_
+<<<<<<< HEAD
 									//cell->getSprite()->setAnchorPoint(Vec2::ZERO);
 									cell->setPosition(Vec2((getSingleTiledSize.x)*(cell->getColumn()+0.5), (getSingleTiledSize.y + (tileinterval - 95 *0.5))*(cell->getRow()+0.5)));
 									
@@ -141,6 +190,16 @@ void CellsLayer::displayCells()
 									
 						}
 						
+=======
+									cell->getSprite()->setAnchorPoint(Vec2::ZERO);
+									cell->setPosition(Vec2((getSingleTiledSize.x)*j, (getSingleTiledSize.y + (tileinterval - 95 * 0.5))*i));
+									
+								
+									addChild(cell,30);
+									++j;
+						}
+						++i;
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 			}
 
 
@@ -164,7 +223,11 @@ void CellsLayer::supplyCells()
 			}
 			for (int col = _supCell.size(); col < 7; ++col)
 			{
+<<<<<<< HEAD
 						auto randcol = (rand() % 100);
+=======
+						auto randcol = static_cast<CellsColor>(rand() % 7);
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 						auto cel = createCells(randcol);
 						_supCell.push_back(cel);
 			}
@@ -194,6 +257,7 @@ void CellsLayer::setCellsToScreen(int col, int row)
 {
 }
 
+<<<<<<< HEAD
 void CellsLayer::linkLineInGrid(int col1, int row1, int col2, int row2)
 {
 			Vec2 pos1, pos2;
@@ -207,10 +271,13 @@ void CellsLayer::linkLineInGrid(int col1, int row1, int col2, int row2)
 
 
 
+=======
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 void CellsLayer::checkCells()
 {
 }
 
+<<<<<<< HEAD
 Vec2 CellsLayer::coordinateToVec2(int col, int row)
 {
 			Vec2 vec(getSingleTiledSize.x*(col+0.5), (getSingleTiledSize.y + (tileinterval - 95 * 0.5))*(row+0.5));
@@ -224,6 +291,8 @@ int *CellsLayer::vec2ToCoordinate(Vec2 vec)
 			return transformArr;
 }
 
+=======
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 void CellsLayer::showLightCells(CellsColor col)
 {
 			for (auto cells : _displayCell)
@@ -237,10 +306,13 @@ void CellsLayer::showLightCells(CellsColor col)
 									}
 									else
 									{
+<<<<<<< HEAD
 												if (!cell->isSelected())
 												{														
 															_touchCells.push_back(cell);
 												}
+=======
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "dis_normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("light_effect"));
 									}
@@ -261,7 +333,10 @@ void CellsLayer::recoverLightCells(CellsColor col)
 									}
 									else
 									{
+<<<<<<< HEAD
 												cell->_isSelected = false;
+=======
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("dis_normal_effect"));
 									}
 						}
@@ -275,24 +350,35 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 			{
 						//检索触摸地方，如果是格子，继续
 						{
+<<<<<<< HEAD
 									assert(_displayCell.size() > 0);
+=======
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 									for (auto cells : _displayCell)
 									{
 												for (auto cell : cells)
 												{
 															if (cell->getBoundingBox().containsPoint(touch->getLocation()))
 															{
+<<<<<<< HEAD
 																		cell->_isSelected = true;
 																		showLightCells(cell->getColor());
 																		_touchCells.push_back(cell);
 																		_touchMoveCells.push_back(cell);
+=======
+																		showLightCells(cell->getColor());
+																		
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 																		return true;
 															}
 												}
 									}
+<<<<<<< HEAD
 
 								
 
+=======
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 						}
 						//检索出显示格子中相同颜色的格子，高亮
 
@@ -305,6 +391,7 @@ void CellsLayer::onTouchMoved(Touch * touch, Event * unused_event)
 {
 			//移动中，如果没有选择格子，那么不做任何事情
 			//如果是格子，判断颜色是否相同，如果相同，加入链表，并继续判断，否则不作处理
+<<<<<<< HEAD
 			for (auto touchlist : _touchCells)
 			{ 
 						if (touchlist->getBoundingBox().containsPoint(touch->getLocation()))
@@ -321,12 +408,15 @@ void CellsLayer::onTouchMoved(Touch * touch, Event * unused_event)
 						}
 			}
 
+=======
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 }
 
 void CellsLayer::onTouchEnded(Touch * touch, Event * unused_event)
 {
 			//结算，如果所选格子都是相同颜色，那么消除格子，清除链表，并检查格子，然后补充格子，然后补充备用格子
 			{
+<<<<<<< HEAD
 						if (_touchCells.size() > 0)
 						{
 									recoverLightCells(_touchCells.back()->getColor());
@@ -347,6 +437,17 @@ void CellsLayer::onTouchEnded(Touch * touch, Event * unused_event)
 						if (_touchMoveCells.size())
 						{
 									_touchMoveCells.clear();
+=======
+						for (auto cells : _displayCell)
+						{
+									for (auto cell : cells)
+									{
+												if (cell->getBoundingBox().containsPoint(touch->getStartLocation()))
+												{
+															recoverLightCells(cell->getColor());														
+												}
+									}
+>>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 						}
 			}
 }
