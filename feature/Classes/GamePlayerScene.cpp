@@ -51,16 +51,6 @@ bool GamePlayerScene::init()
 			
 			//初始化消消乐模块
 			
-<<<<<<< HEAD
-=======
-			{
-						auto cellLayer = CellsLayer::create();
-						//cellLayer->setAnchorPoint(Vec2::ZERO);
-						addChild(cellLayer);
-			}
-
-			/*for (int i = 0; i < 7; ++i)
->>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 			{
 						auto cellLayer = CellsLayer::create();
 						//cellLayer->setAnchorPoint(Vec2::ZERO);
@@ -93,11 +83,7 @@ bool GamePlayerScene::init()
 			//}, 2.0f,-1,2.0f,"moveTower");
 			//
 			////添加触摸
-<<<<<<< HEAD
 			scheduleUpdate();
-=======
-			//scheduleUpdate();
->>>>>>> 1930810ec5c27a97ee53f9f502973a917eeed6c8
 
 			auto menuitem = MenuItemImage::create("CloseNormal.png", "CloseSelected.png", [&](Ref *) {
 						Director::getInstance()->end();
