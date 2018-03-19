@@ -8,7 +8,7 @@ USING_NS_CC;
 
 #define winSize (Director::getInstance()->getWinSize())
 #define randPos (rand()%5)
-#define amendMonsterPositon(index) (index*winSize.width/5+winSize.width/10)
+#define amendMonsterPositon(index) (index*(winSize.width/7-1)+winSize.width/14)
 #define getSingleTiledSize (Vec2((float)(winSize.width/7),(float)(winSize.height/14)))
 #define tileinterval (float)(winSize.width/7)
 

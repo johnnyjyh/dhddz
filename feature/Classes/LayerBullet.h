@@ -1,6 +1,7 @@
 #ifndef __LayerBullet_H__
 #define __LayerBullet_H__
 #include "Common.h"
+#include "Bullet.h"
 
 
 class LayerBullet :
@@ -17,8 +18,8 @@ public:
 			void removeBullet();
 
 
-			Node *node;
-			Vector<Sprite *> _bulletVec;
+			Bullet *_bullet;			
+			Vector<Bullet *> _bulletVec;
 			Vector<SpriteFrame*> _spriteFrameVec;
 };
 #endif //__LayerBullet_H__

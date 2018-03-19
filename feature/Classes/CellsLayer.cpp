@@ -18,11 +18,14 @@ bool CellsLayer::init()
 			do 
 			{
 #ifdef _Test_
+						
+#endif //_Test_
+						//预加载 格子变暗sharder
 						std::string shader1 = FileUtils::getInstance()->getStringFromFile("example_GreyScale.fsh");
 						GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader1.c_str()), "grey_effect");
 						std::string shader2 = FileUtils::getInstance()->getStringFromFile("example_LightScale.fsh");
 						GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader2.c_str()), "light_effect");
-#endif //_Test_
+
 						//初始化格子模块
 						initCells();
 						displayCells();
@@ -87,6 +90,8 @@ bool CellsLayer::initCells()
 									{
 												auto randcol = static_cast<CellsColor>(rand() % 7);											
 												auto cel = createCells(randcol);
+												cel->setColumn(col);
+												cel->setRow(row);
 												_supDisplayCell[row].push_back(cel);
 									}
 									_displayCell.push_back(_supDisplayCell[row]);

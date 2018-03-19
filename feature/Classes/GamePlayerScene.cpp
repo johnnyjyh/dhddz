@@ -45,29 +45,18 @@ bool GamePlayerScene::init()
 			loadAnimate();
 			
 			//添加background
-			initBackGround();
-			//初始化消消乐模块
 			
-			{
-						auto cellLayer = CellsLayer::create();
-						//cellLayer->setAnchorPoint(Vec2::ZERO);
-						addChild(cellLayer);
-			}
+			initBackGround();
+			
+			
+			//初始化消消乐模块
+			//
+			//{
+			//			auto cellLayer = CellsLayer::create();
+			//			//cellLayer->setAnchorPoint(Vec2::ZERO);
+			//			addChild(cellLayer);
+			//}
 
-			/*for (int i = 0; i < 7; ++i)
-			{
-						for (int j = 0; j < 5; ++j)
-						{
-									auto spr2 = Sprite::createWithSpriteFrameName("operating_ purple.png");
-									spr2->setAnchorPoint(Vec2(0, 0));
-									spr2->setPosition(Vec2((getSingleTiledSize.x)*i, (getSingleTiledSize.y+(tileinterval-95 * _scalesizeX))*j));
-									spr2->setScale(_scalesizeX);
-
-									log("tiled:%lf ,%lf", spr2->getTextureRect().getMaxX(), spr2->getTextureRect().getMaxY());
-									addChild(spr2, 20);
-
-						}
-			}*/
 
 			
 			
@@ -76,10 +65,10 @@ bool GamePlayerScene::init()
 			
 			
 			////塔初始化-->子弹预加载	
-			//createTower();
+			createTower();
 	
 			////怪兽初始化
-			//createMonster();
+			createMonster();
 	
 			////添加子弹
 			//createAndBindBullet();
@@ -94,7 +83,7 @@ bool GamePlayerScene::init()
 			//}, 2.0f,-1,2.0f,"moveTower");
 			//
 			////添加触摸
-			//scheduleUpdate();
+			scheduleUpdate();
 
 			auto menuitem = MenuItemImage::create("CloseNormal.png", "CloseSelected.png", [&](Ref *) {
 						Director::getInstance()->end();
@@ -212,22 +201,46 @@ void GamePlayerScene::onExit()
 void GamePlayerScene::update(float dt)
 {
 			//实时检查炮台位置，调整子弹位置
+			//碰撞检测子弹 备用
 			{
-						auto layerbul = static_cast<LayerBullet *>(_layerTower->getChildByName("BulletLay"));
+						/*auto layerbul = static_cast<LayerBullet *>(_layerTower->_bulletLayer);
 						if (_layerTower)
 						{
 									if (layerbul)
 									{
 												for (auto bul : layerbul->_bulletVec)
-												{													
+												{
 																		for (auto mons : _layerMonster->_monsterVec)
 																		{
-																					if (bul->getBoundingBox().intersectsRect(mons->getBoundingBox()) )
+																					if (bul->getBoundingBox().intersectsRect(mons->getBoundingBox()))
 																					{
 																								_layerMonster->monsterDeath(mons);
 																								break;
 																					}
 																		}
+												}
+									}
+						}*/    
+			}
+
+			{
+						if (_layerMonster->_monsterVec.size())
+						{
+									auto layerbul = static_cast<LayerBullet *>(_layerTower->_bulletLayer);
+									auto mons = _layerMonster->_monsterVec.front();
+									//auto pos = amendMonsterPositon(_layerMonster->_monsterVec.front()->getPos());
+									if (mons->getPos() != _layerTower->_tower->getPos())
+									{
+												_layerTower->moveTower(mons->getPos());
+									}
+									if (layerbul->_bulletVec.size())
+									{
+												for (auto bul : layerbul->_bulletVec)
+												{
+															if (bul->getBoundingBox().intersectsRect(mons->getBoundingBox()))
+															{
+																		_layerMonster->monsterDeath(mons);
+															}
 												}
 									}
 						}

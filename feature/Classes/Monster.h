@@ -10,18 +10,19 @@ public:
 			~Monster();
 
 			static Monster *create();
-			void BindMonsterSprite(Sprite *sp,int life,int speed);
+			void BindMonsterSprite(Sprite *sp,int life,int speed,int pos);
 			Sprite *getSprite();
 			int getLife();
 			void loseLife();
+			int getPos();
 			Rect getBoundingBox();
 
 
 
-			Sprite *_monster_instance;
-			int _life;
-			int _speed;
-			
+			Sprite *_monster_instance{nullptr};
+			int _life{0};
+			int _speed{0};
+			int _pos{0};
 	
 };
 

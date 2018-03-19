@@ -13,12 +13,18 @@ public:
 			Rect getBoundingBox();
 			CellsColor getColor();
 			bool isSelected();
+			
+
 
 
 			bool _isSelected;
 			CellsColor _col;
 			Sprite* _instance;
 
+			CC_SYNTHESIZE(int, _row, Row);
+			CC_SYNTHESIZE(int, _column, Column);
+			
+		
 
 };
 #endif //__Tiles_H__

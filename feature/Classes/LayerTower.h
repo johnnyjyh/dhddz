@@ -2,6 +2,7 @@
 #define __LayerTower_H__
 #include "Common.h"
 #include "Tower.h"
+#include "LayerBullet.h"
 
 class LayerTower:
 			public Layer
@@ -18,6 +19,7 @@ public:
 			void moveTower(int index);
 			
 			Tower *_tower;
+			LayerBullet *_bulletLayer;
 			Vector<SpriteFrame *> _spriteFrameVec;
 
 			

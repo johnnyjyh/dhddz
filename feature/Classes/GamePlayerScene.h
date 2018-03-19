@@ -41,6 +41,7 @@ public:
 
 			LayerTower *_layerTower;
 			LayerMonster *_layerMonster;
+			CellsLayer *_layerCells;
 
 			float _scalesizeX;
 			float _scalesizeY;
