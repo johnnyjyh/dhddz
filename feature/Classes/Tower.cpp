@@ -49,11 +49,16 @@ void Tower::loseLife()
 			--_life;
 }
 
+int Tower::getPos()
+{
+			return _pos;
+}
+
 Rect Tower::getBoundingBox()
 {
 			auto rectBak = _instance->getBoundingBox();
 			Vec2 pos = convertToWorldSpace(rectBak.origin);
-			Rect rect = Rect(pos.x, pos.y, rectBak.size.width, rectBak.size.height);
+			Rect rect = Rect(pos.x, pos.y, rectBak.size.width ,rectBak.size.height);
 			return rect;
 
 }

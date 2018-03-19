@@ -47,7 +47,9 @@ bool LayerMonster::init()
 						animation = Animation::createWithSpriteFrames(_spriteFrameVec, 0.1f, 1);
 						AnimationCache::getInstance()->addAnimation(animation, "DeathMonster");
 						schedule(SEL_SCHEDULE(&LayerMonster::addMonster), 2.0f);
-
+#ifdef _Test_
+						testindex = 0;
+#endif //_Test_
 						ret = true;
 
 			} while (0);
@@ -56,14 +58,26 @@ bool LayerMonster::init()
 
 void LayerMonster::addMonster(float dt)
 {
+#ifdef _Test_
+			if (testindex < 5)
+			{
+						++testindex;
+			}
+			else
+			{
+						testindex = 1;
+			}
+#endif //_Test
 			auto monster = Monster::create();
 			_monsterVec.pushBack(monster);
-			monster->BindMonsterSprite(Sprite::createWithSpriteFrameName("pumpkin_rest_001.png"), MonsterLife::monsterL1, MonsterSpeed::monsterS1);
+			monster->BindMonsterSprite(Sprite::createWithSpriteFrameName("pumpkin_rest_001.png"), MonsterLife::monsterL1, MonsterSpeed::monsterS1, testindex);
 #ifdef _Test_
-			DrawSpriteFrame::drawSpriteFrame(monster->getSprite());
+			//DrawSpriteFrame::drawSpriteFrame(monster->getSprite());
 #endif  //_Test_
 			monster->getSprite()->setScale(0.3f);
-			monster->getSprite()->setPosition(Vec2(amendMonsterPositon(randPos), winSize.height - monster->getSprite()->getBoundingBox().size.height / 2));
+			auto randmon = rand() % 6 + 1;
+			auto monspos = amendMonsterPositon(testindex);
+			monster->getSprite()->setPosition(Vec2(monspos, winSize.height - monster->getSprite()->getBoundingBox().size.height /4));
 			
 			auto ani = Animate::create(AnimationCache::getInstance()->getAnimation("CreateMonster"));
 			auto ani2 = Animate::create(AnimationCache::getInstance()->getAnimation("WalkMonster"));
@@ -91,7 +105,8 @@ int LayerMonster::monsterDeath(Monster *monster)
 						_monsterVec.eraseObject(monster);
 						auto ani = Animate::create(AnimationCache::getInstance()->getAnimation("DeathMonster"));
 						auto funcNa = CallFuncN::create([&,monster](Node *node) {							
-									monster->removeFromParent();
+									monster->removeAllChildren();
+									monster->removeFromParentAndCleanup(true);									
 						});
 						auto seq = Sequence::create(ani, funcNa, NULL);
 						monster->getSprite ()->runAction(seq);				

@@ -19,10 +19,11 @@ Monster *Monster::create( )
 			return pRet;
 }
 
-void Monster::BindMonsterSprite(Sprite * sp, int life, int speed)
+void Monster::BindMonsterSprite(Sprite * sp, int life, int speed,int pos)
 {
 			_monster_instance = sp;
 			_life = life;
+			_pos = pos;
 			_speed = speed;
 
 #ifdef _Test_
@@ -44,6 +45,11 @@ int Monster::getLife()
 void Monster::loseLife()
 {
 			--_life;
+}
+
+int Monster::getPos()
+{
+			return _pos;
 }
 
 Rect Monster::getBoundingBox()

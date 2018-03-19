@@ -13,6 +13,9 @@ public:
 			void addMonster(float dt);			
 			int monsterDeath(Monster *monster);
 
+#ifdef _Test_
+			int testindex;
+#endif //_Test_
 
 			Vector<SpriteFrame *> _spriteFrameVec;
 			Vector<Monster *> _monsterVec;

@@ -14,14 +14,16 @@ public:
 			Sprite *getSprite();
 			int getLife();
 			void loseLife();
+			int getPos();
 			Rect getBoundingBox();
 			
 
 
-			Sprite *_instance;
-			int _life;
-			int _damage;
-			int _speed;
+			Sprite *_instance{nullptr};
+			int _life{0};
+			int _damage{0};
+			int _speed{0};
+			int _pos{0};
 			
 			
 };
