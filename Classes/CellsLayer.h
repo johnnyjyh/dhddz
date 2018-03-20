@@ -21,20 +21,36 @@ public:
 			//控制函数 在 begin 里面开始，move里面判断  ，end里面结算   ，可以8个方向获取格子，3连即消除，但是选择路线前进后，不能回退，不能重复选择
 			//消除的内容 添加到一个链表内，处理完清除链表
 			//游戏过程为，  显示格子->判断消除 ->人工触发->消除格子->补充格子 然后循环
-			Cells *createCells(CellsColor col);
+			Cells *createCells(int col);
 			bool initCells();
 			void displayCells();
 			bool isCanDestroyCells();
 			void destroyCells();
 			void supplyCells();
 			bool isPreCells();
+			void preCells();
+
+			Cells *findCell(int col, int row);
+
+			Cells *getNewCellForSupCell();
+
+
 			void setCellsToScreen(int col, int row);
+
+			void linkLineInGrid(int col1,int row1,int col2,int row2);
 
 			void checkCells();
 
+			Vec2 coordinateToVec2(int col, int row);
+			
+			int *vec2ToCoordinate(Vec2 vec);
 
 			void showLightCells(CellsColor col);  //shader light
+			
 			void recoverLightCells(CellsColor col);//recover light
+
+			void moveCell(Cells *cell,int col1, int row1, int col2, int row2);//移动显示结构，并改变存储位置
+
 
 
 
@@ -54,6 +70,11 @@ public:
 			std::vector<Cells *> _supCell;
 			std::vector<Cells *> _supDisplayCell[5];
 			std::list<Cells *> _desCell;
+			std::list<DrawNode *> _linkLineCache;
+			std::list<Cells *> _touchCells;
+			std::list<Cells *> _touchMoveCells;
+
+			int transformArr[2];
 };
 
 

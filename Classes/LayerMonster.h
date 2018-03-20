@@ -17,6 +17,7 @@ public:
 			int testindex;
 #endif //_Test_
 
+			Monster *_monster;
 			Vector<SpriteFrame *> _spriteFrameVec;
 			Vector<Monster *> _monsterVec;
 };

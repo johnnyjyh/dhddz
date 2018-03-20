@@ -29,8 +29,11 @@ Cells * Cells::create()
 void Cells::bindCellsSprite(Sprite * sp, CellsColor col, bool isSel)
 {
 			_instance = sp;
+			_life = 1;
 			_col = col;
 			_isSelected = isSel;
+			setRow(-1);
+			setColumn(-1);
 			addChild(sp,30);
 }
 
@@ -43,7 +46,7 @@ Rect Cells::getBoundingBox()
 {
 			auto rectbak = _instance->getBoundingBox();
 			auto pos = convertToWorldSpace(rectbak.origin);
-			auto rect = Rect(pos.x, pos.y, rectbak.size.width, rectbak.size.height);
+			auto rect = Rect(pos.x+ rectbak.size.width /6, pos.y+ rectbak.size.height /6, rectbak.size.width/1.5, rectbak.size.height/1.5);
 			return rect;
 }
 
@@ -55,4 +58,14 @@ CellsColor Cells::getColor()
 bool Cells::isSelected()
 {
 			return _isSelected;
+}
+
+void Cells::loseLife()
+{
+			--_life;
+}
+
+int Cells::getLife()
+{
+			return _life;
 }

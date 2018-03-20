@@ -50,12 +50,12 @@ bool GamePlayerScene::init()
 			
 			
 			//初始化消消乐模块
-			//
-			//{
-			//			auto cellLayer = CellsLayer::create();
-			//			//cellLayer->setAnchorPoint(Vec2::ZERO);
-			//			addChild(cellLayer);
-			//}
+			
+			{
+						auto cellLayer = CellsLayer::create();
+						//cellLayer->setAnchorPoint(Vec2::ZERO);
+						addChild(cellLayer);
+			}
 
 
 			
@@ -229,21 +229,53 @@ void GamePlayerScene::update(float dt)
 									auto layerbul = static_cast<LayerBullet *>(_layerTower->_bulletLayer);
 									auto mons = _layerMonster->_monsterVec.front();
 									//auto pos = amendMonsterPositon(_layerMonster->_monsterVec.front()->getPos());
+									//DrawSpriteFrame::drawSpriteFrame(mons->getSprite());
+									
+									
 									if (mons->getPos() != _layerTower->_tower->getPos())
 									{
 												_layerTower->moveTower(mons->getPos());
 									}
 									if (layerbul->_bulletVec.size())
-									{
-												for (auto bul : layerbul->_bulletVec)
-												{
-															if (bul->getBoundingBox().intersectsRect(mons->getBoundingBox()))
+									{										
+											
+												/*auto draw1 = DrawNode::create();
+												draw1->drawRect(Vec2(layerbul->_bulletVec.front()->getBoundingBox().getMinX(), layerbul->_bulletVec.front()->getBoundingBox().getMinY()), Vec2(layerbul->_bulletVec.front()->getBoundingBox().getMaxX(), layerbul->_bulletVec.front()->getBoundingBox().getMaxY()), Color4F::GREEN);
+												layerbul->_bulletVec.front()->addChild(draw1);*/
+										
+												
+
+															if (layerbul->_bulletVec.front()->getBoundingBox().intersectsRect(mons->getBoundingBox())&& layerbul->_bulletVec.front()->getLife()>0)
 															{
+
+																		/*auto draw2 = DrawNode::create();
+																		draw2->drawRect(Vec2(mons->getBoundingBox().getMinX(), mons->getBoundingBox().getMinY()), Vec2(mons->getBoundingBox().getMaxX(), mons->getBoundingBox().getMaxY()), Color4F::GREEN);
+																		mons->addChild(draw2);*/
+
+																		
+																		layerbul->_bulletVec.front()->loseLife();
 																		_layerMonster->monsterDeath(mons);
-															}
-												}
+															}												
 									}
 						}
 			}
 			
+}
+
+
+bool GamePlayerScene::onTouchBegan(Touch * touch, Event * unused_event)
+{
+			return true;
+}
+
+void GamePlayerScene::onTouchMoved(Touch * touch, Event * unused_event)
+{
+}
+
+void GamePlayerScene::onTouchEnded(Touch * touch, Event * unused_event)
+{
+}
+
+void GamePlayerScene::onTouchCancelled(Touch * touch, Event * unused_event)
+{
 }

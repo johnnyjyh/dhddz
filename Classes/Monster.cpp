@@ -56,7 +56,7 @@ Rect Monster::getBoundingBox()
 {
 			auto rectBak = _monster_instance->getBoundingBox();
 			Vec2 pos = convertToWorldSpace(rectBak.origin);
-			Rect rect = Rect(pos.x+ rectBak.size.width / 4, pos.y, rectBak.size.width/4, rectBak.size.height);
+			Rect rect = Rect(pos.x+ rectBak.size.width / 2.7, pos.y, rectBak.size.width/4, rectBak.size.height);
 			return rect;
 }
 

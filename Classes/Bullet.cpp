@@ -51,7 +51,7 @@ Rect Bullet::getBoundingBox()
 {
 			auto rectBak = _bullet_instance->getBoundingBox();
 			auto pos = convertToWorldSpace(rectBak.origin);
-			auto rect = Rect(pos.x , pos.y, rectBak.size.width , rectBak.size.height);
+			auto rect = Rect(pos.x+ rectBak.size.width / 4, pos.y, rectBak.size.width/2, rectBak.size.height);
 			return rect;
 }
 

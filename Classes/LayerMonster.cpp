@@ -69,10 +69,11 @@ void LayerMonster::addMonster(float dt)
 			}
 #endif //_Test
 			auto monster = Monster::create();
+			_monster = monster;
 			_monsterVec.pushBack(monster);
 			monster->BindMonsterSprite(Sprite::createWithSpriteFrameName("pumpkin_rest_001.png"), MonsterLife::monsterL1, MonsterSpeed::monsterS1, testindex);
 #ifdef _Test_
-			DrawSpriteFrame::drawSpriteFrame(monster->getSprite());
+			//DrawSpriteFrame::drawSpriteFrame(monster->getSprite());
 #endif  //_Test_
 			monster->getSprite()->setScale(0.3f);
 			auto randmon = rand() % 6 + 1;
@@ -81,10 +82,12 @@ void LayerMonster::addMonster(float dt)
 			
 			auto ani = Animate::create(AnimationCache::getInstance()->getAnimation("CreateMonster"));
 			auto ani2 = Animate::create(AnimationCache::getInstance()->getAnimation("WalkMonster"));
-			auto moveto = MoveTo::create(5, Vec2(monster->getSprite ()->getPosition ().x,0));
+			auto moveto = MoveTo::create(monsterS1, Vec2(monster->getSprite ()->getPosition ().x,winSize.height/2));
 			auto funcN = CallFuncN::create([&,monster](Node *node) {
+						monster->getSprite()->stopAllActions();
 						_monsterVec.eraseObject(monster);
 						monster->removeFromParent();
+						
 			});
 			auto seq1 = Sequence::create(moveto, funcN,NULL);
 			auto moveandani = Spawn::create(ani2,seq1,NULL);			
@@ -105,7 +108,8 @@ int LayerMonster::monsterDeath(Monster *monster)
 						_monsterVec.eraseObject(monster);
 						auto ani = Animate::create(AnimationCache::getInstance()->getAnimation("DeathMonster"));
 						auto funcNa = CallFuncN::create([&,monster](Node *node) {							
-									monster->removeFromParent();
+									monster->removeAllChildren();
+									monster->removeFromParentAndCleanup(true);									
 						});
 						auto seq = Sequence::create(ani, funcNa, NULL);
 						monster->getSprite ()->runAction(seq);				

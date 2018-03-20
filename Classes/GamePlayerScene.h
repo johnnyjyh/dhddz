@@ -38,6 +38,16 @@ public:
 			void onEnter();  //预用于内存申请 相关域cocos类
 			void onExit();//预用于内存清理 相关域cocos类
 			void update(float dt);
+			
+						//以下四个继承来的虚函数用于来集成控制函数
+			bool onTouchBegan(Touch *touch, Event *unused_event);
+
+			void onTouchMoved(Touch *touch, Event *unused_event);
+
+			void onTouchEnded(Touch *touch, Event *unused_event);
+
+			void onTouchCancelled(Touch *touch, Event *unused_event);
+			
 
 			LayerTower *_layerTower;
 			LayerMonster *_layerMonster;
