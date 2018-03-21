@@ -98,12 +98,12 @@ bool CellsLayer::initCells()
 									_displayCell.push_back(_supDisplayCell[row]);
 						}
 						
-						for (int col = 0; col < 7; ++col)
-						{
-									auto randcol =(rand() % 100);
-									auto cel = createCells(randcol);
-									_supCell.push_back(cel);
-						}
+						//for (int col = 0; col < 7; ++col)
+						//{
+						//			auto randcol =(rand() % 100);
+						//			auto cel = createCells(randcol);
+						//			_supCell.push_back(cel);
+						//}
 
 						ret = true;
 			} while (0);
@@ -232,7 +232,7 @@ void CellsLayer::preCells()
 						{
 									for (int i = desCell->getRow()+1; i < 5; ++i)
 									{
-												/*auto cell = std::find_if(_displayCell.at(desCell->getRow()).begin(), _displayCell.at(desCell->getRow().end()), 
+												auto celldes = std::find_if(_displayCell.at(desCell->getRow()).begin(), _displayCell.at(desCell->getRow()).end(),
 															[&](Cells *cell) {
 															if (desCell == cell)
 															{
@@ -242,14 +242,19 @@ void CellsLayer::preCells()
 															{
 																		return false;
 															}
-												});*/
+												});
 												auto cell = findCell(desCell->getColumn(), i);
 												if (cell->getLife()>0)
 												{
-															moveCell(cell,desCell->getColumn(), i, desCell->getColumn(), i-1);
-															auto cellbak = findCell(desCell->getColumn(), i - 1);
+															
+															auto cellbak = *celldes;
 															cell = cellbak;
-															cellbak = cell;
+															*celldes = cell;
+															auto col = desCell->getColumn();
+															auto row = desCell->getRow();
+															(*celldes)->setColumn(cell->getColumn());
+															(*celldes)->setRow(cell->getRow());
+															moveCell(cell, desCell->getColumn(), i, col,row);
 															//desCell->removeAllChildren();
 															//desCell->removeFromParentAndCleanup(true);
 												}
@@ -273,18 +278,13 @@ void CellsLayer::preCells()
 									});
 									
 									if ((*cell)->getLife()<1)
-									{
-												//log("%d,%d",(*cell)->getColumn(),(*cell)->getRow());
-												
-
-												(*cell) = _supCell.back();
-												//log("%d", _supCell.back()->getColumn());
-												//addChild(*cell);
-												//(*cell)->setColumn(desCell->getColumn());
-												//(*cell)->setRow(4);
-												//(*cell)->setPosition(coordinateToVec2((*cell)->getColumn(), (*cell)->getRow()));
-												//
-												//moveCell(*cell, (*cell)->getColumn(), (*cell)->getRow(), (*cell)->getColumn(), (*cell)->getRow());*/
+									{																						
+												(*cell) = getNewCellForSupCell();																							
+												(*cell)->setColumn(desCell->getColumn());
+												(*cell)->setRow(4);
+												(*cell)->setPosition(coordinateToVec2((*cell)->getColumn(), (*cell)->getRow()));
+												addChild(*cell,30);
+												moveCell(*cell, (*cell)->getColumn(), (*cell)->getRow(),desCell->getColumn(), desCell->getRow()); 
 									}
 
 									
@@ -305,10 +305,10 @@ Cells * CellsLayer::findCell(int col, int row)
 
 Cells * CellsLayer::getNewCellForSupCell()
 {
-			auto cell = _supCell.front();
-			//auto iter = --_supCell.end();
-			//_supCell.erase(iter);
-			return cell;
+			auto randcol = (rand() % 100);
+			auto cel = createCells(randcol);			
+			cel->setScale(0.5);
+			return cel;
 }
 
 
