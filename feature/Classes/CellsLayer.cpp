@@ -73,8 +73,9 @@ Cells * CellsLayer::createCells(int col)
 			}
 			else
 			{
-						
-			}			
+						static_assert((redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability) == 100, " redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability !=100");
+			}
+			
 			return cel;
 }
 
@@ -182,7 +183,8 @@ void CellsLayer::destroyCells()
 									desCells->loseLife();
 									_desCell.push_back(desCells);
 						}
-						preCells();
+						this->preCells();
+
 			}
 
 }
@@ -245,7 +247,9 @@ void CellsLayer::preCells()
 												if (cell->getLife()>0)
 												{
 															moveCell(cell,desCell->getColumn(), i, desCell->getColumn(), i-1);
-															cell->swap(findCell(desCell->getColumn(), i-1));
+															auto cellbak = findCell(desCell->getColumn(), i - 1);
+															cell = cellbak;
+															cellbak = cell;
 															//desCell->removeAllChildren();
 															//desCell->removeFromParentAndCleanup(true);
 												}
@@ -256,7 +260,7 @@ void CellsLayer::preCells()
 
 									}
 								
-									auto cell = std::find_if(_displayCell.at(desCell->getRow()).begin(), _displayCell.at(desCell->getRow().end()),
+									auto cell = std::find_if(_displayCell.at(desCell->getRow()).begin(), _displayCell.at(desCell->getRow()).end(),
 												[&](Cells *cell) ->bool{
 												if (desCell == cell)
 												{
@@ -267,16 +271,20 @@ void CellsLayer::preCells()
 															return false;
 												}
 									});
+									
 									if ((*cell)->getLife()<1)
 									{
-												log("1111111111111111");
+												//log("%d,%d",(*cell)->getColumn(),(*cell)->getRow());
+												
 
-												*cell = getNewCellForSupCell();
-												(*cell)->setColumn(desCell->getColumn());
-												(*cell)->setRow(i);
-												(*cell)->setPosition(coordinateToVec2(cell->getColumn(), cell->getRow()));
-												addChild(*cell);
-												moveCell(*cell, (*cell)->getColumn(), (*cell)->getRow(), (*cell)->getColumn(), i);
+												(*cell) = _supCell.back();
+												//log("%d", _supCell.back()->getColumn());
+												//addChild(*cell);
+												//(*cell)->setColumn(desCell->getColumn());
+												//(*cell)->setRow(4);
+												//(*cell)->setPosition(coordinateToVec2((*cell)->getColumn(), (*cell)->getRow()));
+												//
+												//moveCell(*cell, (*cell)->getColumn(), (*cell)->getRow(), (*cell)->getColumn(), (*cell)->getRow());*/
 									}
 
 									
@@ -297,8 +305,9 @@ Cells * CellsLayer::findCell(int col, int row)
 
 Cells * CellsLayer::getNewCellForSupCell()
 {
-			auto cell = _supCell.back();
-			_supCell.pop_back();
+			auto cell = _supCell.front();
+			//auto iter = --_supCell.end();
+			//_supCell.erase(iter);
 			return cell;
 }
 
@@ -442,8 +451,7 @@ void CellsLayer::onTouchMoved(Touch * touch, Event * unused_event)
 												}											
 												touchlist->_isSelected = true;
 												linkLineInGrid(touchlist->getColumn(), touchlist->getRow(), _touchMoveCells.back()->getColumn(), _touchMoveCells.back()->getRow());
-												_touchMoveCells.push_back(touchlist);
-												log("moveCellsVec:%d", _touchMoveCells.size());
+												_touchMoveCells.push_back(touchlist);										
 												return;
 
 						}
@@ -474,7 +482,7 @@ void CellsLayer::onTouchEnded(Touch * touch, Event * unused_event)
 						}
 						if (_touchMoveCells.size())
 						{
-									destroyCells();
+									this->destroyCells();
 									_touchMoveCells.clear();
 						}
 			}
