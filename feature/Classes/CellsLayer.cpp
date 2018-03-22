@@ -40,34 +40,34 @@ bool CellsLayer::init()
 			return ret;
 }
 
-Cells * CellsLayer::createCells(int col)
+Cells * CellsLayer::createCells(int randnum)
 {
 			auto cel = Cells::create();
-			if (col < redProbability)
+			if (randnum < redProbability)
 			{
 						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_red.png"), red, false);
 			}
-			else if (col < redProbability + pinkProbability)
+			else if (randnum < redProbability + pinkProbability)
 			{
 						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_pink.png"), pink, false);
 			}
-			else if (col < redProbability + pinkProbability + yellowProbability)
+			else if (randnum < redProbability + pinkProbability + yellowProbability)
 			{
 						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_yellow.png"), yellow, false);
 			}
-			else if (col < redProbability + pinkProbability + yellowProbability + greenProbability)
+			else if (randnum < redProbability + pinkProbability + yellowProbability + greenProbability)
 			{
 						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_ green.png"), green, false);
 			}
-			else if (col < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability)
+			else if (randnum < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability)
 			{
 						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_blue.png"), blue, false);
 			}
-			else if (col < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability)
+			else if (randnum < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability)
 			{
 						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_blueand.png"), blueand, false);
 			}
-			else if (col < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability)
+			else if (randnum < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability)
 			{
 						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_ purple.png"), purple, false);
 			}
@@ -75,7 +75,7 @@ Cells * CellsLayer::createCells(int col)
 			{
 						static_assert((redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability) == 100, " redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability !=100");
 			}
-			
+
 			return cel;
 }
 
@@ -85,26 +85,30 @@ bool CellsLayer::initCells()
 			do 
 			{
 
-						for (int row = 0; row < 5; ++row)
-						{									
-									for (int col = 0; col < 7; ++col)
-									{
-												auto randcol =(rand() % 100);											
-												auto cel = createCells(randcol);
-												cel->setRow(row);
-												cel->setColumn(col);
-												_supDisplayCell[row].push_back(cel);
+						for (int col = 0; col < 7; ++col)
+						{
+									std::list<Cells *> listtemp;
+									for (int row = 0; row < 5; ++row)
+									{												
+												auto randnum = rand() % 100;
+												auto cell = createCells(randnum);
+												if (cell == nullptr)
+												{
+															--row;
+															continue;
+												}
+												cell->setRow(row);
+												cell->setColumn(col);
+												listtemp.push_back(cell);
 									}
-									_displayCell.push_back(_supDisplayCell[row]);
+									_displayCell.push_back(listtemp);
 						}
-						
 						//for (int col = 0; col < 7; ++col)
 						//{
 						//			auto randcol =(rand() % 100);
 						//			auto cel = createCells(randcol);
 						//			_supCell.push_back(cel);
 						//}
-
 						ret = true;
 			} while (0);
 			return ret;
@@ -126,14 +130,11 @@ void CellsLayer::displayCells()
 						{
 									
 #ifdef _Test_
-
-									cell->getSprite()->setScale(0.5);
-									
+									cell->getSprite()->setScale(0.5);								
 #endif //_Test_
 									//cell->getSprite()->setAnchorPoint(Vec2::ZERO);
 									cell->setPosition(Vec2((getSingleTiledSize.x)*(cell->getColumn()+0.5), (getSingleTiledSize.y + (tileinterval - 95 *0.5))*(cell->getRow()+0.5)));
-									
-								
+												
 									addChild(cell,30);
 									
 						}
@@ -230,84 +231,53 @@ void CellsLayer::preCells()
 			{
 						for (auto desCell : _desCell)
 						{
-									for (int i = desCell->getRow()+1; i < 5; ++i)
-									{
-												auto celldes = std::find_if(_displayCell.at(desCell->getRow()).begin(), _displayCell.at(desCell->getRow()).end(),
-															[&](Cells *cell) {
-															if (desCell == cell)
-															{
-																		return true;
-															}
-															else
-															{
-																		return false;
-															}
-												});
-												auto cell = findCell(desCell->getColumn(), i);
-												if (cell->getLife()>0)
-												{
-															
-															auto cellbak = *celldes;
-															cell = cellbak;
-															*celldes = cell;
-															auto col = desCell->getColumn();
-															auto row = desCell->getRow();
-															(*celldes)->setColumn(cell->getColumn());
-															(*celldes)->setRow(cell->getRow());
-															moveCell(cell, desCell->getColumn(), i, col,row);
-															//desCell->removeAllChildren();
-															//desCell->removeFromParentAndCleanup(true);
-												}
-												else 
-												{
-															log("2222222222222");
-												}
-
-									}
 								
-									auto cell = std::find_if(_displayCell.at(desCell->getRow()).begin(), _displayCell.at(desCell->getRow()).end(),
-												[&](Cells *cell) ->bool{
-												if (desCell == cell)
-												{
-															return true;
-												}
-												else
-												{
-															return false;
-												}
-									});
-									
-									if ((*cell)->getLife()<1)
-									{																						
-												(*cell) = getNewCellForSupCell();																							
-												(*cell)->setColumn(desCell->getColumn());
-												(*cell)->setRow(4);
-												(*cell)->setPosition(coordinateToVec2((*cell)->getColumn(), (*cell)->getRow()));
-												addChild(*cell,30);
-												moveCell(*cell, (*cell)->getColumn(), (*cell)->getRow(),desCell->getColumn(), desCell->getRow()); 
-									}
 
+
+									/*					(*iter).remove(desCell);
+														auto cell = getNewCellForSupCell();
+														cell->setColumn(desCol);
+														cell->setRow(rowtemp);
+														(*iter).push_back(cell);
+														cell->setPosition(coordinateToVec2(cell->getColumn(), 4));
+														moveCell(cell, cell->getColumn(), 4, cell->getColumn(), cell->getRow());
+														addChild(cell, 30);*/
 									
-									supplyCells();
 									desCell->removeAllChildren();
 									desCell->removeFromParentAndCleanup(true);
+									desCell = nullptr;
 						}
 						_desCell.clear();
 			}
 
 }
 
+void CellsLayer::preCellsBak()
+{
+		
+}
+
 Cells * CellsLayer::findCell(int col, int row)
 {
+			auto iter = _displayCell.begin();
+			for (int i = 0; i < col; ++col)
+			{
+						++iter;
+			}
+			auto cell_iter = (*iter).begin();
+			for (int i = 0; i < row; ++i)
+			{
+						++cell_iter;
+			}
+			return *cell_iter;
 
-			return _displayCell[row][col];
 }
 
 Cells * CellsLayer::getNewCellForSupCell()
 {
 			auto randcol = (rand() % 100);
 			auto cel = createCells(randcol);			
-			cel->setScale(0.5);
+			cel->getSprite()->setScale(0.5);
 			return cel;
 }
 
@@ -416,7 +386,7 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 									{
 												for (auto cell : cells)
 												{
-															if (cell->getBoundingBox().containsPoint(touch->getLocation()))
+															if (cell&& cell->getBoundingBox().containsPoint(touch->getLocation())  )
 															{
 																		cell->_isSelected = true;
 																		showLightCells(cell->getColor());
@@ -426,9 +396,6 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 															}
 												}
 									}
-
-								
-
 						}
 						//检索出显示格子中相同颜色的格子，高亮
 
