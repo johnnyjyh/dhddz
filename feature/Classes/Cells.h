@@ -22,6 +22,7 @@ public:
 			bool _isSelected;
 			CellsColor _col;
 			Sprite* _instance;
+			bool isUsedLogic{ false };
 
 			CC_SYNTHESIZE(int, _row, Row);
 			CC_SYNTHESIZE(int, _column, Column);

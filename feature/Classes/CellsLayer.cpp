@@ -140,8 +140,8 @@ void CellsLayer::displayCells()
 						}
 						
 			}
-
-
+			restoreStalemate();
+			_isCanRunning = true;			
 }
 
 bool CellsLayer::isCanDestroyCells()
@@ -161,6 +161,7 @@ void CellsLayer::destroyCells()
 {
 			if (isCanDestroyCells())
 			{
+						_isCanRunning = false;
 						for (auto desCells : _touchMoveCells)
 						{
 
@@ -268,24 +269,174 @@ void CellsLayer::preCells()
 									}
 									++colRecord;
 						}
+						if (!isStalemate())
+						{
+									restoreStalemate();
+									restoreAction();
+						}
+						else
+						{
+									restoreStalemate();
+						}
 			}
 			
 
 }
 
+int CellsLayer::computeTheOneCell(std::list<Cells*>::iterator cellBegin, std::list<Cells*>::iterator cellEnd,int count)
+{
+			if (cellBegin == cellEnd)
+			{
+						return count;
+			}
+			else
+			{
+						int num = 1;
+						auto re = cellBegin;				
+						auto re2 = re;
+						(*re)->isUsedLogic = true;					
+						for (; re2 != cellEnd; ++re2)
+						{
+									if (((*re2)->getRow() == (*re)->getRow() || (*re2)->getColumn() == (*re)->getColumn()) && (*re2)->isUsedLogic == false)
+									{
+												if (abs((*re2)->getColumn() - (*re)->getColumn()) == 1 || abs((*re2)->getRow() - (*re)->getRow()) == 1)
+												{
+															num += computeTheOneCell(re2, cellEnd, count);
+															(*re2)->isUsedLogic = true;
+												}
+									}
+									else if (((*re2)->getColumn() != (*re)->getColumn() && (*re2)->getRow() != (*re)->getRow()) && (*re2)->isUsedLogic == false)
+									{
+												if (abs((*re2)->getColumn() - (*re)->getColumn()) + abs((*re2)->getRow() - (*re)->getRow()) == 2)
+												{
+															num += computeTheOneCell(re2, cellEnd, count);
+															(*re2)->isUsedLogic = true;
+												}
+									}
+									else
+									{
+												continue;
+									}
+						}
+
+						if (num > count)
+						{
+									count = num;
+						}
+						return count;
+			}
+}
+
+void CellsLayer::restoreAction()
+{
+			if (!_isCanRunning)
+			{
+						for (auto &cells : _displayCell)
+						{
+									for (auto &cell : cells)
+									{
+												auto moveto = MoveTo::create(0.5f, coordinateToVec2(3, 2));
+												auto moveback = MoveTo::create(0.5f, coordinateToVec2(cell->getColumn(), cell->getRow()));
+												auto sequence_moveTo_moveBack = Sequence::create(moveto,moveback,NULL);
+												cell->runAction(sequence_moveTo_moveBack);
+									}
+						}
+						_isCanRunning = true;
+			}
+}
+
 bool CellsLayer::isStalemate()
 {
-			do 
+			auto ret = false;
+			do
 			{
 						//检测格子能否消除
+						int reback = 0;
+						for (int i = 0; i < 7; ++i)
+						{
+									std::list<Cells *> calcColor;
+									for (auto cells : _displayCell)
+									{
+												for (auto cell : cells)
+												{
+															if (static_cast<int>(cell->getColor()) == i)
+															{
+																		calcColor.push_back(cell);
+															}
+												}
+									}
+									auto isCan = 0;
+									auto isCanBak = 0;
+									std::list<Cells *> recordCell;
+									for (std::list<Cells*>::iterator re = calcColor.begin(); re != calcColor.end(); ++re)
+									{												
+												isCanBak = computeTheOneCell(re, calcColor.end(), 0);
+												if (isCanBak>isCan)
+												{
+															isCan = isCanBak;
+												}
+												for (auto s = re; s != calcColor.end(); ++s)
+												{
+															(*s)->isUsedLogic = false;
+												}
+									}
 
+
+									for (auto &numtemp : calcColor)
+									{
+												numtemp->isUsedLogic = false;
+									}
+									
+									log("color : %d, connect:%d (%d)", i, isCan, calcColor.size());
+									
+									if (isCan >= 3)
+									{
+												ret = true;
+												
+									}
+						}
+						log("***********************");
 			} while (0);
-			return false;
+			return ret;
 }
 
 void CellsLayer::restoreStalemate()
 {
 			//打乱格子排序
+			if (!isStalemate())
+			{
+						std::vector<Cells *> mytestbak;
+						for (const auto &cells : _displayCell)
+						{
+									for (const auto &cell : cells)
+									{
+												mytestbak.push_back(cell);
+									}
+						}
+						std::default_random_engine defaultEngine;
+						std::shuffle(mytestbak.begin(), mytestbak.end(), defaultEngine);
+						auto iter = mytestbak.begin();
+						int col = 0;
+						int row = 0;
+						for (auto &itercol = _displayCell.begin(); itercol != _displayCell.end(); ++itercol)
+						{
+									row = 0;
+									for (auto &iterrow = (*itercol).begin(); iterrow != (*itercol).end(); ++iterrow)
+									{
+												*iterrow = *iter;
+												(*iterrow)->setRow(row);
+												(*iterrow)->setColumn(row);
+												++iter;
+												++row;
+									}
+									++col;
+						}					
+						restoreStalemate();
+			}
+			else
+			{						
+						return;
+			}
 }
 
 
@@ -433,7 +584,7 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 			{
 					
 						//检索触摸地方，如果是格子，继续
-						if (!checkCells())
+						if (!checkCells() && !_isCanRunning)
 						{
 									return ret;
 						}

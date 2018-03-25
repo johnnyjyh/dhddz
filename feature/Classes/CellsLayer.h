@@ -30,6 +30,10 @@ public:
 			bool isPreCells();
 			void preCells();
 
+			int computeTheOneCell(std::list<Cells *>::iterator cellBegin, std::list<Cells *>::iterator cellEnd, int count);
+
+			void restoreAction();
+
 			bool isStalemate();
 
 			void restoreStalemate();
@@ -76,6 +80,7 @@ public:
 			std::list<DrawNode *> _linkLineCache;
 			std::list<Cells *> _touchCells;
 			std::list<Cells *> _touchMoveCells;
+			bool _isCanRunning{false};
 
 			int transformArr[2];
 };
