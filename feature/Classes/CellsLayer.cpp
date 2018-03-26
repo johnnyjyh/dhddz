@@ -140,8 +140,8 @@ void CellsLayer::displayCells()
 						}
 						
 			}
-
-
+			restoreStalemate();
+			_isCanRunning = true;			
 }
 
 bool CellsLayer::isCanDestroyCells()
@@ -161,6 +161,7 @@ void CellsLayer::destroyCells()
 {
 			if (isCanDestroyCells())
 			{
+						_isCanRunning = false;
 						for (auto desCells : _touchMoveCells)
 						{
 
@@ -237,18 +238,18 @@ void CellsLayer::preCells()
 												++colRecord;
 												continue;
 									}
-									else if(cells.size()<5 && cells.size()>=0)
+									else if (cells.size() < 5 && cells.size() >= 0)
 									{
 												auto cell = cells.begin();
 												for (int row = 0; row < 5; ++row)
 												{
-															if ( static_cast<unsigned int>(row) < cells.size())
+															if (static_cast<unsigned int>(row) < cells.size())
 															{
-																		
-																		(*cell)->setRow(row);		
+
+																		(*cell)->setRow(row);
 																		moveCell((*cell), 0, 0, colRecord, row);
 																		++cell;
-															}													
+															}
 															else
 															{
 																		auto cel = getNewCellForSupCell();
@@ -259,33 +260,175 @@ void CellsLayer::preCells()
 																		addChild(cel);
 																		moveCell(cel, 0, 0, cel->getColumn(), cel->getRow());
 															}
-															
+
 												}
 									}
-									else 
+									else
 									{
 												assert(cells.size() > 5);
 									}
 									++colRecord;
 						}
+						restoreStalemate();
 			}
-			
+}
 
+int CellsLayer::computeTheOneCell(std::vector<Cells *> &cells, Cells * cellCurrent, int count)
+{
+			if (cellCurrent == nullptr)
+			{
+						return count;
+			}
+			else
+			{
+						int num = 1;
+						auto re = cellCurrent;
+						re->isUsedLogic = true;
+						auto re2 = cells.begin();
+						for (; re2 != cells.end(); ++re2)
+						{
+									if (((*re2)->getRow() == re->getRow() || (*re2)->getColumn() == re->getColumn()) && (*re2)->isUsedLogic == false)
+									{
+												if (abs((*re2)->getColumn() - re->getColumn()) == 1 || abs((*re2)->getRow() - re->getRow()) == 1)
+												{
+															(*re2)->isUsedLogic = true;
+															num += computeTheOneCell(cells, *re2,count);														
+												}
+									}
+									else if (((*re2)->getColumn() != re->getColumn() && (*re2)->getRow() != re->getRow()) && (*re2)->isUsedLogic == false)
+									{
+												if (abs((*re2)->getColumn() - re->getColumn()) + abs((*re2)->getRow() - re->getRow()) == 2)
+												{
+															(*re2)->isUsedLogic = true;
+															num += computeTheOneCell(cells, *re2, count);															
+											}
+									}
+									else
+									{
+												continue;
+									}
+						}
+
+
+						if (num > count)
+						{
+									count = num;
+						}
+						return count;
+			}
+}
+
+void CellsLayer::restoreAction()
+{
+			if (!_isCanRunning)
+			{
+						for (auto &cells : _displayCell)
+						{
+									for (auto &cell : cells)
+									{
+												cell->stopAllActions();
+												auto moveto = MoveTo::create(0.5f, coordinateToVec2(3, 2));
+												auto moveback = MoveTo::create(0.5f, coordinateToVec2(cell->getColumn(), cell->getRow()));
+												auto sequence_moveTo_moveBack = Sequence::create(moveto,moveback,NULL);
+												cell->runAction(sequence_moveTo_moveBack);
+									}
+						}
+						_isCanRunning = true;
+			}
 }
 
 bool CellsLayer::isStalemate()
 {
-			do 
+			auto ret = false;
+			do
 			{
 						//检测格子能否消除
+						int reback = 0;
+						for (int i = 0; i < 7; ++i)
+						{
+									std::vector<Cells *> calcColor;
+									for (auto &cells : _displayCell)
+									{
+												for (auto &cell : cells)
+												{
+															if (static_cast<int>(cell->getColor()) == i)
+															{
+																		calcColor.push_back(cell);
+															}
+												}
+									}
+									auto isCan = 0;
+									auto isCanBak = 0;
+									std::vector<Cells *> recordCell;
+									
+									for (unsigned int i=0;i<calcColor.size();++i)
+									{												
+												isCanBak = computeTheOneCell(calcColor,calcColor[i], 0);
+												if (isCanBak > isCan)
+												{
+															isCan = isCanBak;
+												}
 
+												
+									}
+
+
+									for (auto &numtemp : calcColor)
+									{
+												numtemp->isUsedLogic = false;
+									}
+									
+									//log("color : %d, connect:%d (%d)", i, isCan, calcColor.size());
+									
+									if (isCan >= 3)
+									{
+												ret = true;
+												break;
+									}
+						}
+						log("***********************");
 			} while (0);
-			return false;
+			return ret;
 }
 
 void CellsLayer::restoreStalemate()
 {
 			//打乱格子排序
+			if (!isStalemate())
+			{
+						std::vector<Cells *> mytestbak;
+						for (const auto &cells : _displayCell)
+						{
+									for (const auto &cell : cells)
+									{
+												mytestbak.push_back(cell);
+									}
+						}
+						std::default_random_engine defaultEngine;
+						std::shuffle(mytestbak.begin(), mytestbak.end(), defaultEngine);
+						auto iter = mytestbak.begin();
+						int col = 0;
+						int row = 0;
+						for (auto &itercol = _displayCell.begin(); itercol != _displayCell.end(); ++itercol)
+						{
+									row = 0;
+									for (auto &iterrow = (*itercol).begin(); iterrow != (*itercol).end(); ++iterrow)
+									{
+												*iterrow = *iter;
+												(*iterrow)->setRow(row);
+												(*iterrow)->setColumn(row);
+												++iter;
+												++row;
+									}
+									++col;
+						}
+						restoreAction();
+						restoreStalemate();
+			}
+			else
+			{						
+						return;
+			}
 }
 
 
@@ -433,7 +576,7 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 			{
 					
 						//检索触摸地方，如果是格子，继续
-						if (!checkCells())
+						if (!checkCells() && !_isCanRunning)
 						{
 									return ret;
 						}
