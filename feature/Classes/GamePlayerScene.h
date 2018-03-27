@@ -25,6 +25,9 @@ public:
 			bool createMonster();
 			//创建并绑定子弹
 			bool createAndBindBullet();
+			//
+			bool createCellsForPlant();
+			
 			//退出按钮
 
 			bool initBackGround();

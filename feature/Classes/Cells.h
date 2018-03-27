@@ -23,6 +23,7 @@ public:
 			CellsColor _col;
 			Sprite* _instance;
 			bool isUsedLogic{ false };
+			bool _isTouchBack{ false };
 
 			CC_SYNTHESIZE(int, _row, Row);
 			CC_SYNTHESIZE(int, _column, Column);

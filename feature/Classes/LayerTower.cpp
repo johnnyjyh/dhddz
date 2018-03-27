@@ -58,18 +58,18 @@ void LayerTower::addTower(float dt)
 
 			
 			
-			schedule([&,tower](float dt) {
-						if (_bulletLayer)
-						{
-									attack(tower);
-									//spr->setPosition(Vec2(winSize.width/2, winSize.height/2));
-									
-#ifdef _Test_
-									//DrawSpriteFrame::drawSpriteFrame(static_cast<Sprite *>(spr->getSprite()));
-#endif //_Test_		
-									
-						}
-			},3.0f,"shootSch");
+//			schedule([&,tower](float dt) {
+//						if (_bulletLayer)
+//						{
+//									attack(tower);
+//									//spr->setPosition(Vec2(winSize.width/2, winSize.height/2));
+//									
+//#ifdef _Test_
+//									//DrawSpriteFrame::drawSpriteFrame(static_cast<Sprite *>(spr->getSprite()));
+//#endif //_Test_		
+//									
+//						}
+//			},3.0f,"shootSch");
 
 			
 }
@@ -77,21 +77,27 @@ void LayerTower::addTower(float dt)
 void LayerTower::moveTower(int index)
 {
 			//auto spr = static_cast<Tower *>(getChildByName("TowerSpr"))->getSprite();
+			log("1111111111111");
 			auto spr = _tower->getSprite();
+			spr->stopAllActions();
 			_tower->_pos = index;
 			auto pt = convertToWorldSpace(Vec2(amendMonsterPositon(index), winSize.height/2- spr->getBoundingBox().size.height / 3));
 			auto moveTo = MoveTo::create(0.5f,pt);
-			spr->runAction(moveTo);
+			auto func = CallFuncN::create(CC_CALLBACK_1(LayerTower::attack,this));
+			auto seq = Sequence::create(moveTo, func, NULL);
+			spr->runAction(seq);
 #ifdef _Test_
 			
 #endif //_Test_
 }
 
-void LayerTower::attack(Tower *tower)
+void LayerTower::attack(Node *node)
 {
+			auto tower = static_cast<Sprite *>(node);
 			_bulletLayer->startShoot();
 			auto spr = _bulletLayer->_bullet;
-			spr->getSprite()->setPosition(Vec2(tower->getSprite()->getPosition().x, tower->getSprite()->getPosition().y + tower->getSprite()->getBoundingBox().size.height));
+			spr->getSprite()->setPosition(Vec2(tower->getPosition().x, tower->getPosition().y + tower->getBoundingBox().size.height));
+			//spr->getSprite()->setPosition(Vec2(tower->getSprite()->getPosition().x, tower->getSprite()->getPosition().y + tower->getSprite()->getBoundingBox().size.height));
 }
 
 

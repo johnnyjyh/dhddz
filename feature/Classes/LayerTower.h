@@ -18,7 +18,7 @@ public:
 
 			void moveTower(int index);
 
-			void attack(Tower *tower);
+			void attack(Node *node);
 			
 			Tower *_tower;
 			LayerBullet *_bulletLayer;

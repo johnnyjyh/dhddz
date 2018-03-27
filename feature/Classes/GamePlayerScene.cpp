@@ -50,12 +50,8 @@ bool GamePlayerScene::init()
 			
 			
 			//初始化消消乐模块
-			
-			{
-						auto cellLayer = CellsLayer::create();
-						//cellLayer->setAnchorPoint(Vec2::ZERO);
-						addChild(cellLayer);
-			}
+			createCellsForPlant();
+		
 
 
 			
@@ -137,6 +133,21 @@ bool GamePlayerScene::createAndBindBullet()
 						ret = true;
 			} while (0);
 
+			return ret;
+}
+
+bool GamePlayerScene::createCellsForPlant()
+{
+			auto ret = false;
+			do 
+			{
+
+						auto cellLayer = CellsLayer::create();
+						addChild(cellLayer);
+						_layerCells = cellLayer;
+						
+						ret = true;
+			} while (0);
 			return ret;
 }
 
@@ -232,8 +243,9 @@ void GamePlayerScene::update(float dt)
 									//DrawSpriteFrame::drawSpriteFrame(mons->getSprite());
 									
 									
-									if (mons->getPos() != _layerTower->_tower->getPos())
+									if (_layerCells->_cellScore>=10)
 									{
+												_layerCells->_cellScore = 0;
 												_layerTower->moveTower(mons->getPos());
 									}
 									if (layerbul->_bulletVec.size())

@@ -30,7 +30,7 @@ public:
 			bool isPreCells();
 			void preCells();
 
-			int computeTheOneCell(std::list<Cells *>::iterator cellBegin, std::list<Cells *>::iterator cellEnd, int count);
+			int computeTheOneCell(std::vector<Cells *> &cells, Cells * cellCurrent,int count);
 
 			void restoreAction();
 
@@ -45,6 +45,8 @@ public:
 			void setCellsToScreen(int col, int row);
 
 			void linkLineInGrid(int col1,int row1,int col2,int row2);
+			
+			void unLinkLineInGrid(int col1, int row1, int col2, int row2);
 
 			bool checkCells();
 
@@ -81,6 +83,8 @@ public:
 			std::list<Cells *> _touchCells;
 			std::list<Cells *> _touchMoveCells;
 			bool _isCanRunning{false};
+			
+			int _cellScore{ 0 };
 
 			int transformArr[2];
 };
