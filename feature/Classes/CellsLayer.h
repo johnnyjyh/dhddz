@@ -45,6 +45,8 @@ public:
 			void setCellsToScreen(int col, int row);
 
 			void linkLineInGrid(int col1,int row1,int col2,int row2);
+			
+			void unLinkLineInGrid(int col1, int row1, int col2, int row2);
 
 			bool checkCells();
 

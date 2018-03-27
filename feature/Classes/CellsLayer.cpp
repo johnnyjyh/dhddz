@@ -187,7 +187,6 @@ void CellsLayer::destroyCells()
 									_desCell.clear();
 						}
 						this->preCells();
-
 			}
 
 }
@@ -269,7 +268,9 @@ void CellsLayer::preCells()
 									}
 									++colRecord;
 						}
+
 						restoreStalemate();
+						_isCanRunning = true;
 			}
 }
 
@@ -322,9 +323,9 @@ void CellsLayer::restoreAction()
 {
 			if (!_isCanRunning)
 			{
-						for (auto &cells : _displayCell)
+						for (auto cells : _displayCell)
 						{
-									for (auto &cell : cells)
+									for (auto cell : cells)
 									{
 												cell->stopAllActions();
 												auto moveto = MoveTo::create(0.5f, coordinateToVec2(3, 2));
@@ -333,7 +334,7 @@ void CellsLayer::restoreAction()
 												cell->runAction(sequence_moveTo_moveBack);
 									}
 						}
-						_isCanRunning = true;
+					
 			}
 }
 
@@ -386,7 +387,7 @@ bool CellsLayer::isStalemate()
 												break;
 									}
 						}
-						log("***********************");
+						//log("***********************");
 			} while (0);
 			return ret;
 }
@@ -416,7 +417,7 @@ void CellsLayer::restoreStalemate()
 									{
 												*iterrow = *iter;
 												(*iterrow)->setRow(row);
-												(*iterrow)->setColumn(row);
+												(*iterrow)->setColumn(col);
 												++iter;
 												++row;
 									}
@@ -472,6 +473,20 @@ void CellsLayer::linkLineInGrid(int col1, int row1, int col2, int row2)
 			line->drawLine(pos1, pos2,Color4F::BLACK);
 			_linkLineCache.push_back(line);
 			addChild(line,10001);
+}
+
+void CellsLayer::unLinkLineInGrid(int col1, int row1, int col2, int row2)
+{
+			if (!_linkLineCache.size())
+			{
+						return;
+			}
+			auto & line = _linkLineCache.back();
+			if (line)
+			{						
+						line->removeFromParentAndCleanup(true);
+			}
+			_linkLineCache.pop_back();
 }
 
 
@@ -609,18 +624,44 @@ void CellsLayer::onTouchMoved(Touch * touch, Event * unused_event)
 {
 			//移动中，如果没有选择格子，那么不做任何事情
 			//如果是格子，判断颜色是否相同，如果相同，加入链表，并继续判断，否则不作处理
+			if (!_isCanRunning)
+			{
+						return;
+			}
 			for (auto touchlist : _touchCells)
-			{ 
+			{
 						if (touchlist->getBoundingBox().containsPoint(touch->getLocation()))
-						{									
-												if (touchlist ->isSelected() || pow(touchlist->getRow() - _touchMoveCells.back()->getRow(), 2) + pow(touchlist->getColumn() - _touchMoveCells.back()->getColumn(), 2) > 2)
-												{
-															return;
-												}											
-												touchlist->_isSelected = true;
-												linkLineInGrid(touchlist->getColumn(), touchlist->getRow(), _touchMoveCells.back()->getColumn(), _touchMoveCells.back()->getRow());
-												_touchMoveCells.push_back(touchlist);										
-												return;
+						{
+									if (touchlist->isSelected() || touchlist->isSelected() && pow(touchlist->getRow() - _touchMoveCells.back()->getRow(), 2) + pow(touchlist->getColumn() - _touchMoveCells.back()->getColumn(), 2) > 2)
+									{
+												break;
+									}
+
+									touchlist->_isSelected = true;
+									linkLineInGrid(touchlist->getColumn(), touchlist->getRow(), _touchMoveCells.back()->getColumn(), _touchMoveCells.back()->getRow());
+									_touchMoveCells.push_back(touchlist);
+									break;
+									
+						}
+			}
+			for (auto touchlist : _touchCells)
+			{
+						if (touchlist->getBoundingBox().containsPoint(touch->getLocation()))
+						{
+									if (touchlist->isSelected() && touchlist->getRow()==_touchMoveCells.back()->getRow() &&touchlist->getColumn()==_touchMoveCells.back()->getColumn())
+									{
+												log("1111111111111111111111111");
+												_linkLineCache.clear();
+												//touchlist->_isSelected = false;
+												//unLinkLineInGrid(0, 0, 0, 0);												
+												/*auto &cellBack = _touchMoveCells.back();
+
+												_touchMoveCells.pop_back();*/
+												
+									}
+
+									
+									return;
 
 						}
 			}
@@ -658,4 +699,5 @@ void CellsLayer::onTouchEnded(Touch * touch, Event * unused_event)
 void CellsLayer::onTouchCancelled(Touch * touch, Event * unused_event)
 {
 			//取消，那么清除链表，恢复选择格子为FALSE；
+			
 }
