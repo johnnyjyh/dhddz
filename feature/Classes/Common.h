@@ -1,71 +1,85 @@
 #ifndef __Common_H__
 #define __Common_H__
-
+#define _Test_
 #include "cocos2d.h"
+#include "cocos-ext.h"
+USING_NS_CC_EXT;
 USING_NS_CC;
+
 #define winSize (Director::getInstance()->getWinSize())
-#define NET_BUF_SIZE 255
+#define randPos (rand()%5)
+#define amendMonsterPositon(index) (index*winSize.width/7+winSize.width/14)
+#define getSingleTiledSize (Vec2((float)(winSize.width/7),(float)(winSize.height/14)))
+#define tileinterval (float)(winSize.width/7)
 
-const int pkWidth = 71;
-const int pkHeight = 96;
-const int pkInterval = 22;
-const char pokerFileName[255] = "poker.png";
-const char bkFileName[255] = "bk.png";
-const char buttonStrFileName[255] = "strings.xml";
-const char signFileName[255] = "BANKER.png";
-const char turnSignFileName[255] = "USER_TRUSTEE.png";
-
-
-//花色
-enum Suit
+enum MonsterZorder
 {
-			Spade = 0,
-			Heart,
-			Club,
-			Diamond,
-			Joker,
-			suitReverse=4,
-};
-//扑克分值
-enum pkNumber
-{
-			three=0,
-			four,
-			five,
-			six,
-			seven,
-			eight,
-			nine,
-			ten,
-			jack,
-			queen,
-			king,
-			ace,
-			two,
-			blackJoker,
-			redJoker,
-			numberReverse=2,
+			monsterZ1 = 1,
 };
 
-//出牌类型
-enum CARD_TYPE
+enum MonsterLife
 {
-			SINGLE_CARD = 1,		//单牌-
-			DOUBLE_CARD,			//对子-
-			THREE_CARD,				//3不带-	
-			THREE_ONE_CARD,			//3带1-
-			THREE_TWO_CARD,			//3带2-		
-			CONNECT_CARD,			//连牌-
-			COMPANY_CARD,			//连队-
-			AIRCRAFT_CARD,			//飞机不带-
-			AIRCRAFT_SINGLE_CARD,	//飞机带单牌-
-			AIRCRAFT_DOBULE_CARD,	//飞机带对子-
-			BOMB_TWO_CARD,			//四个带2张单牌
-			BOMB_DOUBLE_TWO_CARD,		//四个带2对
-			BOMB_CARD,				//炸弹
-			MISSILE_CARD,            //王炸
-			ERROR_CARD				//错误的牌型
+			monsterL1 = 1,
+};
+
+enum MonsterSpeed
+{
+			monsterS1 = 3,
+};
+
+enum Score
+{
+			monsterScore1 = 1,
+};
+
+enum CellsColor
+{
+			red = 0,
+			pink,
+			yellow,
+			green,
+			blue,
+			blueand,
+			purple,
+};
+
+namespace TowerItem
+{
+			enum TowerOrignal
+			{
+						life = 1,
+						damage = 1,
+						speed = 1,
+			};
+};
+
+//格子生成几率，用于制作关卡和测试
+enum CellCreatProbability
+{
+			redProbability =10,
+			pinkProbability = 5,
+			yellowProbability = 25,
+			greenProbability =5,
+			blueProbability = 20,
+			blueandProbability = 25,
+			purpleProbability = 10,
+
+};
+
+class DrawSpriteFrame
+{
+public:
+			static DrawNode * drawSpriteFrame(Sprite *sp)
+			{
+
+						auto draw = DrawNode::create();					
+						draw->drawRect(Vec2(sp->getBoundingBox().getMinX(),sp->getBoundingBox().getMinY()), Vec2(sp->getBoundingBox().getMaxX(),sp->getBoundingBox().getMaxY()), Color4F::GREEN);																		
+						sp->addChild(draw);
+						return draw;
+			}
 };
 
 
-#endif
+
+
+#endif //__Common_H__
