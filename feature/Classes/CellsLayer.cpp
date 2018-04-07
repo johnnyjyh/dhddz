@@ -26,6 +26,7 @@ bool CellsLayer::init()
 						//初始化格子模块
 						initCells();
 						displayCells();
+						//coverFabric(Vec2(0, towerArea));
 						
 						//auto eventDispa = Director::getInstance()->getEventDispatcher();
 						auto listen = EventListenerTouchOneByOne::create();
@@ -247,8 +248,12 @@ void CellsLayer::preCells()
 												for (int row = 0; row < 5; ++row)
 												{
 															if (static_cast<unsigned int>(row) < cells.size())
-															{
-
+															{																	
+																		if ((*cell)->getRow() == row)
+																		{
+																					++cell;
+																					continue;
+																		}
 																		(*cell)->setRow(row);
 																		moveCell((*cell), 0, 0, colRecord, row);
 																		++cell;
@@ -259,7 +264,7 @@ void CellsLayer::preCells()
 																		cells.push_back(cel);
 																		cel->setRow(row);
 																		cel->setColumn(colRecord);
-																		cel->setPosition(coordinateToVec2(colRecord, 4));
+																		cel->setPosition(coordinateToVec2(colRecord, 5));
 																		addChild(cel);
 																		moveCell(cel, 0, 0, cel->getColumn(), cel->getRow());
 															}
@@ -276,6 +281,11 @@ void CellsLayer::preCells()
 						restoreStalemate();
 						_isCanRunning = true;
 			}
+}
+
+DrawNode * CellsLayer::coverFabric(Vec2 pos)
+{
+			return nullptr;
 }
 
 int CellsLayer::computeTheOneCell(std::vector<Cells *> &cells, Cells * cellCurrent, int count)
@@ -588,6 +598,19 @@ void CellsLayer::moveCell(Cells * cell, int col1, int row1, int col2, int row2)
 			}
 }
 
+void CellsLayer::visit(Renderer *renderer, const Mat4& parentTransform, uint32_t parentFlags)
+{
+			glEnable(GL_SCISSOR_TEST);
+
+			int iwin_width = winSize.width;//先前创建的label的横坐标.  
+			int iwin_height = towerArea*winSize.height;
+											
+			glScissor(0,0, iwin_width, iwin_height);//这里绘制你现实的layer的显示地大小  
+
+			Node::visit(renderer,parentTransform,parentFlags);//调用node的vist进行绘图  
+			glDisable(GL_SCISSOR_TEST);
+}
+
 bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 {
 			auto ret = false;
@@ -595,6 +618,7 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 			{
 					
 						//检索触摸地方，如果是格子，继续
+
 						if (!checkCells() && !_isCanRunning)
 						{
 									return ret;

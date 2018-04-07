@@ -77,7 +77,6 @@ void LayerTower::addTower(float dt)
 void LayerTower::moveTower(int index)
 {
 			//auto spr = static_cast<Tower *>(getChildByName("TowerSpr"))->getSprite();
-			log("1111111111111");
 			auto spr = _tower->getSprite();
 			spr->stopAllActions();
 			_tower->_pos = index;

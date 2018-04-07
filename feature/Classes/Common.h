@@ -11,6 +11,8 @@ USING_NS_CC;
 #define amendMonsterPositon(index) (index*winSize.width/7+winSize.width/14)
 #define getSingleTiledSize (Vec2((float)(winSize.width/7),(float)(winSize.height/14)))
 #define tileinterval (float)(winSize.width/7)
+#define towerArea (((float)265/(float)640)*((float)winSize.height))
+
 
 enum MonsterZorder
 {

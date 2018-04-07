@@ -30,6 +30,8 @@ public:
 			bool isPreCells();
 			void preCells();
 
+			DrawNode *coverFabric(Vec2 pos);
+
 			int computeTheOneCell(std::vector<Cells *> &cells, Cells * cellCurrent,int count);
 
 			void restoreAction();
@@ -61,7 +63,8 @@ public:
 			void moveCell(Cells *cell,int col1, int row1, int col2, int row2);//移动显示结构，并改变存储位置
 
 
-
+			//遮盖技术
+			void visit(Renderer *renderer, const Mat4& parentTransform, uint32_t parentFlags) override;
 
 
 			//以下四个继承来的虚函数用于来集成控制函数
