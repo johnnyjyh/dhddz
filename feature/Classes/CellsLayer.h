@@ -64,7 +64,8 @@ public:
 
 
 			//遮盖技术
-			void visit(Renderer *renderer, const Mat4& parentTransform, uint32_t parentFlags) override;
+			//选择用clippingNode
+			void initClippingNode();
 
 
 			//以下四个继承来的虚函数用于来集成控制函数
@@ -85,6 +86,8 @@ public:
 			std::list<DrawNode *> _linkLineCache;
 			std::list<Cells *> _touchCells;
 			std::list<Cells *> _touchMoveCells;
+
+			ClippingNode *_clipNode;
 			bool _isCanRunning{false};
 			
 			int _cellScore{ 0 };

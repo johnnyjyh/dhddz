@@ -1,5 +1,5 @@
 #include "LayerMonster.h"
-
+#include "PlayerData.h"
 
 
 LayerMonster::LayerMonster()
@@ -46,7 +46,7 @@ bool LayerMonster::init()
 						}
 						animation = Animation::createWithSpriteFrames(_spriteFrameVec, 0.1f, 1);
 						AnimationCache::getInstance()->addAnimation(animation, "DeathMonster");
-						schedule(SEL_SCHEDULE(&LayerMonster::addMonster), 2.0f);
+						schedule(SEL_SCHEDULE(&LayerMonster::addMonster), 4.0f);
 #ifdef _Test_
 						testindex = 0;
 #endif //_Test_
@@ -59,14 +59,7 @@ bool LayerMonster::init()
 void LayerMonster::addMonster(float dt)
 {
 #ifdef _Test_
-			if (testindex < 5)
-			{
-						++testindex;
-			}
-			else
-			{
-						testindex = 1;
-			}
+			testindex = rand() % 5 + 1;
 #endif //_Test
 			auto monster = Monster::create();
 			_monster = monster;
@@ -87,7 +80,8 @@ void LayerMonster::addMonster(float dt)
 						monster->getSprite()->stopAllActions();
 						_monsterVec.eraseObject(monster);
 						monster->removeFromParent();
-						
+						--(PlayerData::_playerLife);
+						log("life:%d", PlayerData::_playerLife);
 			});
 			auto seq1 = Sequence::create(moveto, funcN,NULL);
 			auto moveandani = Spawn::create(ani2,seq1,NULL);			

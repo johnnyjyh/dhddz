@@ -17,6 +17,7 @@ bool CellsLayer::init()
 			auto ret = false;
 			do 
 			{
+						initClippingNode();
 #ifdef _Test_
 						std::string shader1 = FileUtils::getInstance()->getStringFromFile("example_GreyScale.fsh");
 						GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader1.c_str()), "grey_effect");
@@ -137,7 +138,7 @@ void CellsLayer::displayCells()
 									//cell->getSprite()->setAnchorPoint(Vec2::ZERO);
 									cell->setPosition(Vec2((getSingleTiledSize.x)*(cell->getColumn()+0.5), (getSingleTiledSize.y + (tileinterval - 95 *0.5))*(cell->getRow()+0.5)));
 												
-									addChild(cell,30);
+									_clipNode->addChild(cell,30);
 									
 						}
 						
@@ -265,7 +266,7 @@ void CellsLayer::preCells()
 																		cel->setRow(row);
 																		cel->setColumn(colRecord);
 																		cel->setPosition(coordinateToVec2(colRecord, 5));
-																		addChild(cel);
+																		_clipNode->addChild(cel);
 																		moveCell(cel, 0, 0, cel->getColumn(), cel->getRow());
 															}
 
@@ -483,8 +484,9 @@ void CellsLayer::linkLineInGrid(int col1, int row1, int col2, int row2)
 			Vec2 pos1, pos2;
 			pos1.set(coordinateToVec2(col1, row1));
 			pos2.set(coordinateToVec2(col2, row2));
-			auto line = DrawNode::create();
+			auto line = DrawNode::create();		
 			line->drawLine(pos1, pos2,Color4F::BLACK);
+			
 			_linkLineCache.push_back(line);
 			addChild(line,10001);
 }
@@ -598,17 +600,24 @@ void CellsLayer::moveCell(Cells * cell, int col1, int row1, int col2, int row2)
 			}
 }
 
-void CellsLayer::visit(Renderer *renderer, const Mat4& parentTransform, uint32_t parentFlags)
+
+
+void CellsLayer::initClippingNode()
 {
-			glEnable(GL_SCISSOR_TEST);
+			_clipNode = ClippingNode::create();
+			_clipNode->setInverted(false);
+			_clipNode->setAlphaThreshold(1.0f);
 
-			int iwin_width = winSize.width;//先前创建的label的横坐标.  
-			int iwin_height = towerArea*winSize.height;
-											
-			glScissor(0,0, iwin_width, iwin_height);//这里绘制你现实的layer的显示地大小  
+			auto stencil = Node::create();
 
-			Node::visit(renderer,parentTransform,parentFlags);//调用node的vist进行绘图  
-			glDisable(GL_SCISSOR_TEST);
+			auto drawnode = DrawNode::create();
+			float coverY = towerArea-10;
+			Vec2 point[4]{ Vec2(0,0),Vec2(0,coverY),Vec2(winSize.width,coverY),Vec2(winSize.width,0) };
+			drawnode->drawPolygon(point, 4, Color4F(1,0,0,1),1,Color4F(0,1,0,1));
+			stencil->addChild(drawnode,-1);
+			_clipNode->setStencil(stencil);
+			addChild(_clipNode,-1);
+
 }
 
 bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)

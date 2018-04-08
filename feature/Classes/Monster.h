@@ -11,6 +11,7 @@ public:
 
 			static Monster *create();
 			void BindMonsterSprite(Sprite *sp,int life,int speed,int pos);
+			void bindLifeSprite();
 			Sprite *getSprite();
 			int getLife();
 			void loseLife();
