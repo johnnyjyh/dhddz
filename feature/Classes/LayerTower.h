@@ -14,7 +14,7 @@ public:
 					
 			bool init();
 			
-			void addTower(float dt);
+			void addTower(int index);
 
 			void moveTower(int index);
 

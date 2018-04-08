@@ -26,7 +26,7 @@ enum MonsterLife
 
 enum MonsterSpeed
 {
-			monsterS1 = 3,
+			monsterS1 = 5,
 };
 
 enum Score
@@ -49,7 +49,7 @@ namespace TowerItem
 {
 			enum TowerOrignal
 			{
-						life = 1,
+						life = 3,
 						damage = 1,
 						speed = 1,
 			};

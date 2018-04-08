@@ -46,7 +46,7 @@ void LayerBullet::startShoot()
 			auto spr = _bullet->getSprite();
 			
 			_bulletVec.pushBack(_bullet);
-			spr->setScale(0.5f);
+			spr->setScaleX(0.5f);
 			auto ani = Animate::create(AnimationCache::getInstance ()->getAnimation ("CreateBullet"));
 			auto func = CallFuncN::create([&](Node *node) {			
 						

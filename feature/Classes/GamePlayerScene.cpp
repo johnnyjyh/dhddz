@@ -1,8 +1,10 @@
 #include "GamePlayerScene.h"
+#include "PlayerData.h"
 
 
 
 int GamePlayerScene::gamePath[7] = {};
+
 
 GamePlayerScene::GamePlayerScene()
 {
@@ -41,6 +43,7 @@ bool GamePlayerScene::init()
 {
 			Layer::init();	
 			srand((unsigned int)(time(NULL)));
+
 			//Ô¤¼ÓÔØ¶¯»­
 			loadAnimate();
 			
@@ -189,6 +192,7 @@ bool GamePlayerScene::loadAnimate()
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("pumpkin_rest/pumpkin_reset.plist");						
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("pumpkin_death/pumpkin_death.plist");			
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tiled/tiled.plist");
+						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tower/tower_life.plist");
 						
 						ret = true;
 			} while (0);
@@ -243,7 +247,7 @@ void GamePlayerScene::update(float dt)
 									//DrawSpriteFrame::drawSpriteFrame(mons->getSprite());
 									
 									
-									if (_layerCells->_cellScore>=10)
+									if (_layerCells->_cellScore>=5)
 									{
 												_layerCells->_cellScore = 0;
 												_layerTower->moveTower(mons->getPos());
@@ -268,6 +272,12 @@ void GamePlayerScene::update(float dt)
 																		layerbul->_bulletVec.front()->loseLife();
 																		_layerMonster->monsterDeath(mons);
 															}												
+									}
+									if (_layerTower->_tower->getBoundingBox().intersectsRect(mons->getBoundingBox()) && mons->getLife() > 0)
+									{
+												mons->loseLife();
+												_layerMonster->monsterDeath(mons);
+												_layerTower->_tower->loseLife();
 									}
 						}
 			}

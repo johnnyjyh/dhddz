@@ -32,13 +32,14 @@ bool LayerTower::init()
 						}
 						Animation *animation = Animation::createWithSpriteFrames(_spriteFrameVec, 0.1f, 1);
 						AnimationCache::getInstance()->addAnimation(animation, "CreateTower");
-						scheduleOnce(SEL_SCHEDULE(&LayerTower::addTower),0.0f);
+						//scheduleOnce(SEL_SCHEDULE(&LayerTower::addTower),0.0f);
+						addTower(2);
 						ret = true;
 			} while (0);
 			return ret;
 }
 
-void LayerTower::addTower(float dt)
+void LayerTower::addTower(int index)
 {
 			auto tower = Tower::create();
 			_tower = tower;
@@ -49,7 +50,7 @@ void LayerTower::addTower(float dt)
 			tower->getSprite()-> setScale(0.5f);
 			
 			auto ani = Animate::create(AnimationCache::getInstance()->getAnimation("CreateTower"));
-			Vec2 pos = Vec2(amendMonsterPositon(1),winSize.height/2-tower->getSprite()->getBoundingBox().size.height /3 );
+			Vec2 pos = Vec2(amendMonsterPositon(index),winSize.height/2-tower->getSprite()->getBoundingBox().size.height /3+10 );
 			
 			tower->getSprite()->setPosition(pos);	
 			tower->getSprite()->runAction(RepeatForever::create(ani));
@@ -80,10 +81,10 @@ void LayerTower::moveTower(int index)
 			auto spr = _tower->getSprite();
 			spr->stopAllActions();
 			_tower->_pos = index;
-			auto pt = convertToWorldSpace(Vec2(amendMonsterPositon(index), winSize.height/2- spr->getBoundingBox().size.height / 3));
+			auto pt = convertToWorldSpace (Vec2(amendMonsterPositon(index), winSize.height/2- spr->getBoundingBox().size.height / 3+10));
 			auto moveTo = MoveTo::create(0.5f,pt);
 			auto func = CallFuncN::create(CC_CALLBACK_1(LayerTower::attack,this));
-			auto seq = Sequence::create(moveTo, func, NULL);
+			auto seq = Sequence::create(moveTo, func, NULL);			
 			spr->runAction(seq);
 #ifdef _Test_
 			
