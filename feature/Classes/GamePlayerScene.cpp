@@ -47,6 +47,12 @@ bool GamePlayerScene::init()
 			//预加载动画
 			loadAnimate();
 			
+			//初始化玩家信息
+			{
+						_playerInstance = PlayerData::getInstancePlayerData();
+						addChild(_playerInstance,20);
+			}
+
 			//添加background
 			
 			initBackGround();
@@ -193,6 +199,7 @@ bool GamePlayerScene::loadAnimate()
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("pumpkin_death/pumpkin_death.plist");			
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tiled/tiled.plist");
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tower/tower_life.plist");
+						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("playerItem/lifeItem.plist");
 						
 						ret = true;
 			} while (0);

@@ -80,8 +80,8 @@ void LayerMonster::addMonster(float dt)
 						monster->getSprite()->stopAllActions();
 						_monsterVec.eraseObject(monster);
 						monster->removeFromParent();
-						--(PlayerData::_playerLife);
-						log("life:%d", PlayerData::_playerLife);
+						PlayerData::getInstancePlayerData()->loseLife();
+						log("life:%d", PlayerData::getInstancePlayerData()->getLife());
 			});
 			auto seq1 = Sequence::create(moveto, funcN,NULL);
 			auto moveandani = Spawn::create(ani2,seq1,NULL);			
