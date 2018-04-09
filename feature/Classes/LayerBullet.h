@@ -12,7 +12,7 @@ public:
 			~LayerBullet();
 			CREATE_FUNC(LayerBullet);
 			bool init();
-			void startShoot();
+			void startShoot(const Vec2 &pos);
 			void stopShoot();
 			void addBulletCallBack(float dt);
 			void removeBullet();

@@ -78,11 +78,12 @@ void LayerTower::addTower(int index)
 void LayerTower::moveTower(int index)
 {
 			//auto spr = static_cast<Tower *>(getChildByName("TowerSpr"))->getSprite();
+			_tower->setIsAttacked(true);
 			auto spr = _tower->getSprite();
-			spr->stopAllActions();
+			//spr->stopAllActions();
 			_tower->_pos = index;
 			auto pt = convertToWorldSpace (Vec2(amendMonsterPositon(index), winSize.height/2- spr->getBoundingBox().size.height / 3+10));
-			auto moveTo = MoveTo::create(0.5f,pt);
+			auto moveTo = MoveTo::create(0.3f,pt);
 			auto func = CallFuncN::create(CC_CALLBACK_1(LayerTower::attack,this));
 			auto seq = Sequence::create(moveTo, func, NULL);			
 			spr->runAction(seq);
@@ -94,9 +95,8 @@ void LayerTower::moveTower(int index)
 void LayerTower::attack(Node *node)
 {
 			auto tower = static_cast<Sprite *>(node);
-			_bulletLayer->startShoot();
-			auto spr = _bulletLayer->_bullet;
-			spr->getSprite()->setPosition(Vec2(tower->getPosition().x, tower->getPosition().y + tower->getBoundingBox().size.height));
+			_bulletLayer->startShoot(Vec2(tower->getPosition().x, tower->getPosition().y + tower->getBoundingBox().size.height));
+			_tower->setIsAttacked(false);
 			//spr->getSprite()->setPosition(Vec2(tower->getSprite()->getPosition().x, tower->getSprite()->getPosition().y + tower->getSprite()->getBoundingBox().size.height));
 }
 

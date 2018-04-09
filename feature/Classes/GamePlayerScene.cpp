@@ -47,6 +47,12 @@ bool GamePlayerScene::init()
 			//预加载动画
 			loadAnimate();
 			
+			//初始化玩家信息
+			{
+						_playerInstance = PlayerData::getInstancePlayerData();
+						addChild(_playerInstance,20);
+			}
+
 			//添加background
 			
 			initBackGround();
@@ -193,6 +199,7 @@ bool GamePlayerScene::loadAnimate()
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("pumpkin_death/pumpkin_death.plist");			
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tiled/tiled.plist");
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tower/tower_life.plist");
+						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("playerItem/lifeItem.plist");
 						
 						ret = true;
 			} while (0);
@@ -217,8 +224,8 @@ void GamePlayerScene::update(float dt)
 {
 			//实时检查炮台位置，调整子弹位置
 			//碰撞检测子弹 备用
-			{
-						/*auto layerbul = static_cast<LayerBullet *>(_layerTower->_bulletLayer);
+		/*	{
+						auto layerbul = static_cast<LayerBullet *>(_layerTower->_bulletLayer);
 						if (_layerTower)
 						{
 									if (layerbul)
@@ -235,10 +242,12 @@ void GamePlayerScene::update(float dt)
 																		}
 												}
 									}
-						}*/    
-			}
+						}    
+			}*/
 
 			{
+						log("mos: %d", _layerMonster->_monsterVec.size());
+						log("bullet : %d", _layerTower->_bulletLayer->_bulletVec.size());
 						if (_layerMonster->_monsterVec.size())
 						{
 									auto layerbul = static_cast<LayerBullet *>(_layerTower->_bulletLayer);
@@ -247,7 +256,7 @@ void GamePlayerScene::update(float dt)
 									//DrawSpriteFrame::drawSpriteFrame(mons->getSprite());
 									
 									
-									if (_layerCells->_cellScore>=5)
+									if (_layerCells->_cellScore >= 0 && ! (_layerTower->_tower->getIsAttacked()))
 									{
 												_layerCells->_cellScore = 0;
 												_layerTower->moveTower(mons->getPos());
@@ -261,7 +270,7 @@ void GamePlayerScene::update(float dt)
 										
 												
 
-															if (layerbul->_bulletVec.front()->getBoundingBox().intersectsRect(mons->getBoundingBox())&& layerbul->_bulletVec.front()->getLife()>0)
+															if (layerbul->_bulletVec.back()->getBoundingBox().intersectsRect(mons->getBoundingBox())&& layerbul->_bulletVec.front()->getLife()>0)
 															{
 
 																		/*auto draw2 = DrawNode::create();
@@ -269,8 +278,9 @@ void GamePlayerScene::update(float dt)
 																		mons->addChild(draw2);*/
 
 																		
-																		layerbul->_bulletVec.front()->loseLife();
-																		_layerMonster->monsterDeath(mons);
+																		layerbul->_bulletVec.back()->loseLife();
+																		auto score=_layerMonster->monsterDeath(mons);
+																		_playerInstance->addScore(score);
 															}												
 									}
 									if (_layerTower->_tower->getBoundingBox().intersectsRect(mons->getBoundingBox()) && mons->getLife() > 0)

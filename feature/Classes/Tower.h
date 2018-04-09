@@ -28,6 +28,7 @@ public:
 			int _damage{0};
 			int _speed{0};
 			int _pos{0};
+			CC_SYNTHESIZE(bool, _runForAttack, IsAttacked);
 			
 			
 };

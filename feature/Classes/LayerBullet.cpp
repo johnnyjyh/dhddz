@@ -34,11 +34,11 @@ bool LayerBullet::init()
 			return ret;
 }
 
-void LayerBullet::startShoot()
+void LayerBullet::startShoot(const Vec2 &pos)
 {
-			_bullet = Bullet::create();
-		
+			_bullet = Bullet::create();	
 			_bullet->BindMonsterSprite(Sprite::createWithSpriteFrameName("fort1_1.png"), 1, 0, 0);
+			_bullet->setPosition(pos);
 #ifdef _Test_
 			//DrawSpriteFrame::drawSpriteFrame(_bullet->getSprite());
 #endif //_Test_
@@ -49,12 +49,12 @@ void LayerBullet::startShoot()
 			spr->setScaleX(0.5f);
 			auto ani = Animate::create(AnimationCache::getInstance ()->getAnimation ("CreateBullet"));
 			auto func = CallFuncN::create([&](Node *node) {			
-						
-						_bulletVec.eraseObject(_bullet);
-						//node->stopAllActions();
-						_bullet->removeAllChildren();
-						_bullet->removeFromParent();
-						_bullet = nullptr;
+						node->stopAllActions();
+						_bulletVec.eraseObject(static_cast<Bullet *>(node->getParent()));					
+						node->getParent()->removeFromParentAndCleanup(true);
+						node->removeAllChildren();
+						node->removeFromParent();
+						//_bullet = nullptr;
 			});
 			auto seq = Sequence::create(ani,func,NULL);			
 			spr->runAction(seq);	

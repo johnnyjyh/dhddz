@@ -26,6 +26,7 @@ void Tower::bindTowerSprite(Sprite *sp, int life, int damage, int speed)
 			_life = life;
 			_damage = damage;;
 			_speed = speed;
+			setIsAttacked(false);
 			addChild(_instance);
 			updateLife();
 			

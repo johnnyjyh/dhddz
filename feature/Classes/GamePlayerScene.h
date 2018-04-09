@@ -5,6 +5,7 @@
 #include "LayerTower.h"
 #include "LayerBullet.h"
 #include "CellsLayer.h"
+#include "PlayerData.h"
 
 class GamePlayerScene :
 			public Layer
@@ -55,6 +56,7 @@ public:
 			LayerTower *_layerTower;
 			LayerMonster *_layerMonster;
 			CellsLayer *_layerCells;
+			PlayerData *_playerInstance;
 
 			float _scalesizeX;
 			float _scalesizeY;

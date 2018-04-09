@@ -46,7 +46,7 @@ bool LayerMonster::init()
 						}
 						animation = Animation::createWithSpriteFrames(_spriteFrameVec, 0.1f, 1);
 						AnimationCache::getInstance()->addAnimation(animation, "DeathMonster");
-						schedule(SEL_SCHEDULE(&LayerMonster::addMonster), 4.0f);
+						schedule(SEL_SCHEDULE(&LayerMonster::addMonster), 0.5f);
 #ifdef _Test_
 						testindex = 0;
 #endif //_Test_
@@ -77,11 +77,11 @@ void LayerMonster::addMonster(float dt)
 			auto ani2 = Animate::create(AnimationCache::getInstance()->getAnimation("WalkMonster"));
 			auto moveto = MoveTo::create(monsterS1, Vec2(monster->getSprite ()->getPosition ().x,winSize.height/2));
 			auto funcN = CallFuncN::create([&,monster](Node *node) {
-						monster->getSprite()->stopAllActions();
-						_monsterVec.eraseObject(monster);
-						monster->removeFromParent();
-						--(PlayerData::_playerLife);
-						log("life:%d", PlayerData::_playerLife);
+						node->stopAllActions();
+						////////////////////
+						_monsterVec.eraseObject(static_cast<Monster *>(node->getParent()));
+						node->getParent()->removeFromParentAndCleanup(true);
+						PlayerData::getInstancePlayerData()->loseLife();						
 			});
 			auto seq1 = Sequence::create(moveto, funcN,NULL);
 			auto moveandani = Spawn::create(ani2,seq1,NULL);			
@@ -101,9 +101,8 @@ int LayerMonster::monsterDeath(Monster *monster)
 						monster->getSprite()-> stopAllActions();
 						_monsterVec.eraseObject(monster);
 						auto ani = Animate::create(AnimationCache::getInstance()->getAnimation("DeathMonster"));
-						auto funcNa = CallFuncN::create([&,monster](Node *node) {							
-									monster->removeAllChildren();
-									monster->removeFromParentAndCleanup(true);									
+						auto funcNa = CallFuncN::create([&,monster](Node *node) {															
+									node->getParent()->removeFromParentAndCleanup(true);
 						});
 						auto seq = Sequence::create(ani, funcNa, NULL);
 						monster->getSprite ()->runAction(seq);				
