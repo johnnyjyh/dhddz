@@ -12,6 +12,7 @@ public:
 			bool init();
 			void addMonster(float dt);			
 			int monsterDeath(Monster *monster);
+			int updateMonsLife(Monster *monster, int att_Damage);
 
 #ifdef _Test_
 			int testindex;

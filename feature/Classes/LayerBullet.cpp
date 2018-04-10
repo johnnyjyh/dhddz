@@ -41,19 +41,20 @@ void LayerBullet::startShoot(const Vec2 &pos)
 			_bullet->setPosition(pos);
 #ifdef _Test_
 			//DrawSpriteFrame::drawSpriteFrame(_bullet->getSprite());
-#endif //_Test_
-	
-			auto spr = _bullet->getSprite();
 			
+#endif //_Test_
+			
+			
+			auto spr = _bullet->getSprite();
 			_bulletVec.pushBack(_bullet);
 			spr->setScaleX(0.5f);
 			auto ani = Animate::create(AnimationCache::getInstance ()->getAnimation ("CreateBullet"));
 			auto func = CallFuncN::create([&](Node *node) {			
 						node->stopAllActions();
-						_bulletVec.eraseObject(static_cast<Bullet *>(node->getParent()));					
+						_bulletVec.eraseObject(static_cast<Bullet *>(node->getParent()));
 						node->getParent()->removeFromParentAndCleanup(true);
 						node->removeAllChildren();
-						node->removeFromParent();
+						node->removeFromParent();					
 						//_bullet = nullptr;
 			});
 			auto seq = Sequence::create(ani,func,NULL);			

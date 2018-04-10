@@ -46,7 +46,7 @@ bool LayerMonster::init()
 						}
 						animation = Animation::createWithSpriteFrames(_spriteFrameVec, 0.1f, 1);
 						AnimationCache::getInstance()->addAnimation(animation, "DeathMonster");
-						schedule(SEL_SCHEDULE(&LayerMonster::addMonster), 0.5f);
+						schedule(SEL_SCHEDULE(&LayerMonster::addMonster), 2.0f);
 #ifdef _Test_
 						testindex = 0;
 #endif //_Test_
@@ -98,15 +98,30 @@ int LayerMonster::monsterDeath(Monster *monster)
 {
 			if (monster)
 			{					
-						monster->getSprite()-> stopAllActions();
-						_monsterVec.eraseObject(monster);
+						monster->getSprite()->stopAllActions();
+
 						auto ani = Animate::create(AnimationCache::getInstance()->getAnimation("DeathMonster"));
-						auto funcNa = CallFuncN::create([&,monster](Node *node) {															
+						auto funcNa = CallFuncN::create([&, monster](Node *node) {
 									node->getParent()->removeFromParentAndCleanup(true);
+									_monsterVec.eraseObject(static_cast<Monster *>(node->getParent()));
 						});
 						auto seq = Sequence::create(ani, funcNa, NULL);
 						monster->getSprite ()->runAction(seq);				
 						return Score::monsterScore1;
+			}
+			return 0;
+}
+
+int LayerMonster::updateMonsLife(Monster *monster,int att_Damage)
+{
+			
+			for (int i = 0; i < att_Damage; ++i)
+			{
+						monster->loseLife();
+			}
+			if (monster->getLife() <= 0)
+			{
+						return monsterDeath(monster);
 			}
 			return 0;
 }

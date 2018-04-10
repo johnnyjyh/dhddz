@@ -83,7 +83,7 @@ void LayerTower::moveTower(int index)
 			//spr->stopAllActions();
 			_tower->_pos = index;
 			auto pt = convertToWorldSpace (Vec2(amendMonsterPositon(index), winSize.height/2- spr->getBoundingBox().size.height / 3+10));
-			auto moveTo = MoveTo::create(0.3f,pt);
+			auto moveTo = MoveTo::create(0.5f,pt);
 			auto func = CallFuncN::create(CC_CALLBACK_1(LayerTower::attack,this));
 			auto seq = Sequence::create(moveTo, func, NULL);			
 			spr->runAction(seq);
