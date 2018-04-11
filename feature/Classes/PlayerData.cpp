@@ -22,6 +22,7 @@ bool PlayerData::init()
 						this->setPlayerScore(0);
 						initPlayerLife();
 						initScoreBoard();
+
 						//初始化血量控件
 						ret = true;
 			} while (0);
@@ -149,4 +150,15 @@ PlayerData * PlayerData::getInstancePlayerData()
 						(PlayerData::s_sharedPlayerDate)->init();
 			}
 			return PlayerData::s_sharedPlayerDate;
+}
+
+void PlayerData::addShuffleCellMenu(CellsLayer * celllay)
+{
+			_itembase = ItemShuffleCells::createItem();
+			
+			static_cast<ItemShuffleCells *>(_itembase)->bindLayerCell(celllay);
+
+			PlayerData::getInstancePlayerData()->addChild(_itembase);
+
+			_itembase->setPosition(Vec2(0, winSize.height / 2));
 }

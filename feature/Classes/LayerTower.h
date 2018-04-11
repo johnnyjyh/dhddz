@@ -19,10 +19,16 @@ public:
 			void moveTower(int index);
 
 			void attack(Node *node);
+
+			bool initTower();
+
+			bool chechTowerPosAndAttack(int index);
+
 			
 			Tower *_tower;
 			LayerBullet *_bulletLayer;
 			Vector<SpriteFrame *> _spriteFrameVec;
+			std::vector<Tower *> _towerVec;
 
 			
 };

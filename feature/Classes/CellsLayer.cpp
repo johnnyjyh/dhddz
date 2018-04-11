@@ -407,6 +407,40 @@ bool CellsLayer::isStalemate()
 			return ret;
 }
 
+void CellsLayer::shffuleCellsforMenu()
+{
+			do 
+			{
+						std::vector<Cells *> mytestbak;
+						for (const auto &cells : _displayCell)
+						{
+									for (const auto &cell : cells)
+									{
+												mytestbak.push_back(cell);
+									}
+						}
+						std::default_random_engine defaultEngine;
+						std::shuffle(mytestbak.begin(), mytestbak.end(), defaultEngine);
+						auto iter = mytestbak.begin();
+						int col = 0;
+						int row = 0;
+						for (auto itercol = _displayCell.begin(); itercol != _displayCell.end(); ++itercol)
+						{
+									row = 0;
+									for (auto iterrow = (*itercol).begin(); iterrow != (*itercol).end(); ++iterrow)
+									{
+												*iterrow = *iter;
+												(*iterrow)->setRow(row);
+												(*iterrow)->setColumn(col);
+												++iter;
+												++row;
+									}
+									++col;
+						}
+						restoreAction();						
+			} while (!isStalemate());//!isStalemate()
+}
+
 void CellsLayer::restoreStalemate()
 {
 			//´òÂÒ¸ñ×ÓÅÅÐò

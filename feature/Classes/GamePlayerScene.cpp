@@ -50,6 +50,7 @@ bool GamePlayerScene::init()
 			//初始化玩家信息
 			{
 						_playerInstance = PlayerData::getInstancePlayerData();
+						
 						addChild(_playerInstance,20);
 			}
 
@@ -88,6 +89,12 @@ bool GamePlayerScene::init()
 			//}, 2.0f,-1,2.0f,"moveTower");
 			//
 			////添加触摸
+
+
+			{
+						//添加道具
+						_playerInstance->addShuffleCellMenu(_layerCells);
+			}
 			scheduleUpdate();
 
 			auto menuitem = MenuItemImage::create("CloseNormal.png", "CloseSelected.png", [&](Ref *) {
@@ -222,10 +229,10 @@ void GamePlayerScene::onExit()
 
 void GamePlayerScene::update(float dt)
 {
-		
+
 
 			{
-						
+
 						//if (_layerMonster->_monsterVec.size())
 						//{
 						//			auto layerbul = static_cast<LayerBullet *>(_layerTower->_bulletLayer);
@@ -285,8 +292,8 @@ void GamePlayerScene::update(float dt)
 
 
 						/////////////////////////////////////////////////////////////////////////////////////////////////////////
-						
-						if (_layerCells->_cellScore >= 3 && !(_layerTower->_tower->getIsAttacked()) && _layerMonster->_monsterVec.size())
+						//test for move tower
+						/*if (_layerCells->_cellScore >= 3 && !(_layerTower->_tower->getIsAttacked()) && _layerMonster->_monsterVec.size())
 						{
 									Monster *monsfront=nullptr;
 									for (auto mons: _layerMonster->_monsterVec)
@@ -306,9 +313,9 @@ void GamePlayerScene::update(float dt)
 
 						}
 						if (_layerMonster->_monsterVec.size() && _layerTower->_bulletLayer->_bulletVec.size())
-						{								
+						{
 									for (auto mons : _layerMonster->_monsterVec)
-									{												
+									{
 												for (auto bullet : _layerTower->_bulletLayer->_bulletVec)
 												{
 
@@ -316,18 +323,16 @@ void GamePlayerScene::update(float dt)
 															{
 																		if (bullet->getBoundingBox().intersectsRect(mons->getBoundingBox()))
 																		{
-																					log("mos: %d", _layerMonster->_monsterVec.size());
-																					log("bullet : %d", _layerTower->_bulletLayer->_bulletVec.size());
 																					bullet->loseLife();
 																					auto score = _layerMonster->updateMonsLife(mons, 1);
 																					_playerInstance->addScore(score);
 																					break;
 																		}
 															}
-									
-															
+
+
 												}
-									}																						
+									}
 						}
 
 						for (auto mons : _layerMonster->_monsterVec)
@@ -338,9 +343,63 @@ void GamePlayerScene::update(float dt)
 												_layerMonster->updateMonsLife(mons, 1);
 												_layerTower->_tower->loseLife();
 									}
+						}*/
+						///////////////////////////////////////////////////////////////////////////////////////////////
+						//test for 5 build tower
+						if ( _layerMonster->_monsterVec.size())
+						{								
+									for (auto mons : _layerMonster->_monsterVec)
+									{
+												if (mons->getLife() > 0 && _layerCells->_cellScore >= 3)
+												{																											
+															if (_layerTower->chechTowerPosAndAttack(mons->getPos()))
+															{
+																		_layerCells->_cellScore -= 3;
+															}
+												}
+									}
 						}
+						if (_layerMonster->_monsterVec.size() && _layerTower->_bulletLayer->_bulletVec.size())
+						{
+									for (auto mons : _layerMonster->_monsterVec)
+									{
+												for (auto bullet : _layerTower->_bulletLayer->_bulletVec)
+												{
+
+															if (static_cast<Monster *>(mons)->getLife() > 0 && (static_cast<Bullet*> (bullet)->getLife() > 0))
+															{
+																		if (bullet->getBoundingBox().intersectsRect(mons->getBoundingBox()))
+																		{
+																					bullet->loseLife();
+																					auto score = _layerMonster->updateMonsLife(mons, 1);
+																					_playerInstance->addScore(score);
+																					break;
+																		}
+															}
+
+
+												}
+									}
+						}
+
+						for (auto mons : _layerMonster->_monsterVec)
+						{
+									for (auto tow : _layerTower->_towerVec)
+									{
+												if (tow->getLife() >= 0 && mons->getLife() > 0 && tow->getBoundingBox().intersectsRect(mons->getBoundingBox()))
+												{
+
+															_layerMonster->updateMonsLife(mons, 1);
+															tow->loseLife();
+												}
+									}
+
+						}
+
+
+
 			}
-			
+
 }
 
 

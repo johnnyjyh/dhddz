@@ -73,6 +73,9 @@ void Tower::updateLife()
 {
 			switch (getLife())
 			{
+			case -1:
+						_instance->setVisible(false);
+						break;
 			case 0:_lifeVec[0]->removeFromParentAndCleanup(true);
 						_lifeVec[0] = Sprite::createWithSpriteFrameName("operating_love2.png");
 						_instance->addChild(_lifeVec[0]);
@@ -132,7 +135,7 @@ Rect Tower::getBoundingBox()
 {
 			auto rectBak = _instance->getBoundingBox();
 			Vec2 pos = convertToWorldSpace(rectBak.origin);
-			Rect rect = Rect(pos.x+ rectBak.size.width/4, pos.y, rectBak.size.width/2,rectBak.size.height);
+			Rect rect = Rect(pos.x+ rectBak.size.width/4, pos.y+ rectBak.size.height / 4, rectBak.size.width/2,rectBak.size.height/2);
 			return rect;
 
 }

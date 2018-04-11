@@ -38,6 +38,8 @@ public:
 
 			bool isStalemate();
 
+			void shffuleCellsforMenu();
+
 			void restoreStalemate();
 
 			Cells *findCell(int col, int row);
@@ -77,7 +79,7 @@ public:
 
 			void onTouchCancelled(Touch *touch, Event *unused_event);
 
-
+			
 
 			std::list<std::list<Cells *>> _displayCell;
 			std::list<Cells *> _supCell;

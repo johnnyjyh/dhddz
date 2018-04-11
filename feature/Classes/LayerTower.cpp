@@ -33,7 +33,7 @@ bool LayerTower::init()
 						Animation *animation = Animation::createWithSpriteFrames(_spriteFrameVec, 0.1f, 1);
 						AnimationCache::getInstance()->addAnimation(animation, "CreateTower");
 						//scheduleOnce(SEL_SCHEDULE(&LayerTower::addTower),0.0f);
-						addTower(2);
+						initTower();
 						ret = true;
 			} while (0);
 			return ret;
@@ -56,7 +56,7 @@ void LayerTower::addTower(int index)
 			tower->getSprite()->runAction(RepeatForever::create(ani));
 	
 			addChild(tower,21,"TowerSpr");
-
+			_towerVec.push_back(tower);
 			
 			
 //			schedule([&,tower](float dt) {
@@ -100,4 +100,32 @@ void LayerTower::attack(Node *node)
 			//spr->getSprite()->setPosition(Vec2(tower->getSprite()->getPosition().x, tower->getSprite()->getPosition().y + tower->getSprite()->getBoundingBox().size.height));
 }
 
+bool LayerTower::initTower()
+{
+			auto ret = false;
+			do
+			{
+						for (int i = 1; i < 6; ++i)
+						{
+									addTower(i);
+						}
+						ret = true;
+			} while (0);
+			return ret;
 
+}
+
+bool LayerTower::chechTowerPosAndAttack(int index)
+{
+			auto ret = false;
+			do 
+			{
+						if (_towerVec[index - 1]->getLife() >= 0)
+						{
+									auto func = CallFuncN::create(CC_CALLBACK_1(LayerTower::attack, this));
+									_towerVec[index - 1]->getSprite()->runAction(func);
+									ret = true;
+						}
+			} while (0);
+			return ret;
+}

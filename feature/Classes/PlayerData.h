@@ -1,6 +1,8 @@
 #ifndef __PlayerData_H__
 #define __PlayerData_H__
 #include "Common.h"
+#include "CellsLayer.h"
+#include "ItemShuffleCells.h"
 
 class PlayerData : public Node
 {
@@ -22,9 +24,17 @@ public:
 
 			static PlayerData * getInstancePlayerData();
 
+			
+			///////////////////////////////////////////////
+			//µ¿æﬂ¿‡
+			void addShuffleCellMenu(CellsLayer * celllay);
+			
+
 
 			static PlayerData * s_sharedPlayerDate;
 			int _playerLife;
+
+			ItemBase *_itembase{ nullptr };
 
 			std::vector<Sprite *> _starsVec;
 
