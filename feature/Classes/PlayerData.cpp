@@ -89,11 +89,10 @@ bool PlayerData::initScoreBoard()
 						//TTFConfig ttf("fonts/arial.ttf");
 						//ttf.fontSize = 25;						
 						//_scoreLabal = Label::createWithTTF(ttf,std::to_string(getPlayerScore()));
-						_scoreLabal = Label::createWithSystemFont(std::to_string(getPlayerScore()),"Arial",30);
+						_scoreLabal = Label::createWithSystemFont(StringUtils::toString(getPlayerScore()),"Arial",30);
 						_mainCarrier->addChild(_scoreLabal,25);
 						auto pos = convertToWorldSpace(_mainCarrier->getBoundingBox().size);
 						_scoreLabal->setPosition(Vec2(_mainCarrier->getBoundingBox().size.width ,_mainCarrier->getBoundingBox().size.height+10));
-						log("score :%f,%f", pos.x, pos.y);
 						_scoreLabal->setColor(Color3B::YELLOW);
 						
 						ret = true;
@@ -125,7 +124,7 @@ void PlayerData::addScore(int score)
 
 void PlayerData::updatePlayerLife()
 {
-			_scoreLabal->setString(std::to_string(getPlayerScore()));
+			_scoreLabal->setString(StringUtils::toString(getPlayerScore()));
 			/*switch (getLife())
 			{
 			case 0:
@@ -154,7 +153,7 @@ PlayerData * PlayerData::getInstancePlayerData()
 
 void PlayerData::addShuffleCellMenu(CellsLayer * celllay)
 {
-			_itembase = ItemShuffleCells::createItem();
+			_itembase = ItemShuffleCells::create();
 			
 			static_cast<ItemShuffleCells *>(_itembase)->bindLayerCell(celllay);
 

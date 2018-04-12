@@ -23,13 +23,15 @@ public:
 			
 
 			std::vector<Sprite *> _lifeVec;
+			std::vector<Sprite *> _lifeEmptyVec;
 			Sprite *_instance{nullptr};
+			ProgressTimer *_lifeProgress;
 			int _life{0};
 			int _damage{0};
 			int _speed{0};
 			int _pos{0};
 			CC_SYNTHESIZE(bool, _runForAttack, IsAttacked);
-			
+			CC_SYNTHESIZE(bool, _isDestroy, IsDestroy);
 			
 };
 

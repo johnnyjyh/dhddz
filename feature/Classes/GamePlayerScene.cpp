@@ -90,11 +90,10 @@ bool GamePlayerScene::init()
 			//
 			////添加触摸
 
-
 			{
 						//添加道具
 						_playerInstance->addShuffleCellMenu(_layerCells);
-			}
+			}		
 			scheduleUpdate();
 
 			auto menuitem = MenuItemImage::create("CloseNormal.png", "CloseSelected.png", [&](Ref *) {

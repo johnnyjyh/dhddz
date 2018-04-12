@@ -34,7 +34,7 @@ public:
 			static PlayerData * s_sharedPlayerDate;
 			int _playerLife;
 
-			ItemBase *_itembase{ nullptr };
+			ItemShuffleCells *_itembase{ nullptr };
 
 			std::vector<Sprite *> _starsVec;
 

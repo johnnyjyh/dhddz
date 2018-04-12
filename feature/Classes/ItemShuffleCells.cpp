@@ -12,7 +12,7 @@ ItemShuffleCells::~ItemShuffleCells()
 {
 }
 
-ItemBase * ItemShuffleCells::createItem()
+ItemShuffleCells * ItemShuffleCells::create()
 {
 			auto ret = new (std::nothrow) ItemShuffleCells;
 			if (ret)
@@ -32,18 +32,21 @@ bool ItemShuffleCells::init()
 			auto ret = false;
 			do 
 			{
-						setRecordTime(99);
+						setRecordTime(10);
 						auto spr = Sprite::createWithSpriteFrameName("operating_skillbox.png");					
 						auto menu = Menu::create();
 						auto menuit = MenuItemImage::create("","",[&](Ref *target) {
-									
-									_layerCells->shffuleCellsforMenu();
+									if (!(_layCells->_isCanRunning) || getRecordTime() <= 0)
+									{
+												return;
+									}
+									_layCells->shffuleCellsforMenu();
 									setRecordTime(getRecordTime() - 1);
 									updateRecordTimes();
 									; });
 						menuit->setNormalImage(Sprite::createWithSpriteFrameName("operating_skill1.png"));
 						menuit->setSelectedImage(Sprite::createWithSpriteFrameName("operating_skill1.png"));
-						auto label = Label::createWithSystemFont(std::to_string(getRecordTime()), "Arial", 30);		
+						auto label = Label::createWithSystemFont(StringUtils::toString(getRecordTime()), "Arial", 30);
 
 						_recordTimeLabel = label;
 						menu->addChild(menuit);
@@ -66,11 +69,11 @@ bool ItemShuffleCells::init()
 
 void ItemShuffleCells::bindLayerCell(CellsLayer * _lay)
 {
-			_layerCells = _lay;
+			_layCells = _lay;
 			this->init();
 }
 
 void ItemShuffleCells::updateRecordTimes()
 {
-			_recordTimeLabel->setString(std::to_string(getRecordTime()));
+			_recordTimeLabel->setString(StringUtils::toString(getRecordTime()));
 }

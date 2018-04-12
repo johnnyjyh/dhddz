@@ -411,10 +411,11 @@ void CellsLayer::shffuleCellsforMenu()
 {
 			do 
 			{
+						_isCanRunning = false;
 						std::vector<Cells *> mytestbak;
-						for (const auto &cells : _displayCell)
+						for (auto cells : _displayCell)
 						{
-									for (const auto &cell : cells)
+									for (auto cell : cells)
 									{
 												mytestbak.push_back(cell);
 									}
@@ -437,7 +438,8 @@ void CellsLayer::shffuleCellsforMenu()
 									}
 									++col;
 						}
-						restoreAction();						
+						restoreAction();
+						_isCanRunning = true;
 			} while (!isStalemate());//!isStalemate()
 }
 
