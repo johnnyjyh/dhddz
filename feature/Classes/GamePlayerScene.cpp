@@ -370,6 +370,7 @@ void GamePlayerScene::update(float dt)
 																		if (bullet->getBoundingBox().intersectsRect(mons->getBoundingBox()))
 																		{
 																					bullet->loseLife();
+																					_layerTower->_bulletLayer->bulletCrashWithMonster(bullet, mons->getSprite()->getPosition());
 																					auto score = _layerMonster->updateMonsLife(mons, 1);
 																					_playerInstance->addScore(score);
 																					break;

@@ -16,7 +16,7 @@ public:
 			void stopShoot();
 			void addBulletCallBack(float dt);
 			void removeBullet();
-
+			void bulletCrashWithMonster(Bullet *bul, Vec2 pos);
 
 			Bullet *_bullet;			
 			Vector<Bullet *> _bulletVec;

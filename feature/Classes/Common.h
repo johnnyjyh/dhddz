@@ -82,6 +82,32 @@ public:
 };
 
 
+namespace BarrierType
+{
+			enum Block
+			{
+						SnowBlock = 11,
+
+			};
+
+			enum Plate
+			{
+						SnowPlate = 21,
+						SteelPlate = 22,
+
+			};
+
+			enum Boom
+			{
+						NormalBoom = 31,
+			};
+
+			enum Diamond
+			{
+						NormalDiamond = 41,
+			};
+};
+
 
 
 #endif //__Common_H__

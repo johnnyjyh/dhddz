@@ -27,7 +27,17 @@ bool LayerBullet::init()
 									_spriteFrameVec.pushBack(sf);
 						}
 						Animation *animation = Animation::createWithSpriteFrames(_spriteFrameVec, 0.18f, 1);
-						AnimationCache::getInstance()->addAnimation(animation, "CreateBullet");						
+						AnimationCache::getInstance()->addAnimation(animation, "CreateBullet");
+						_spriteFrameVec.clear();
+						for (int i = 0; i < 11; ++i)
+						{
+									memset(buf, 0, sizeof(buf));
+									sprintf(buf, "fort1_burst%d.png", i + 1);
+									SpriteFrame *sf = SpriteFrameCache::getInstance()->getSpriteFrameByName(buf);
+									_spriteFrameVec.pushBack(sf);
+						}
+						animation = Animation::createWithSpriteFrames(_spriteFrameVec, 0.18f, 1);
+						AnimationCache::getInstance()->addAnimation(animation, "BulletCrash");
 						ret = true;
 			} while (0);
 			
@@ -74,6 +84,24 @@ void LayerBullet::addBulletCallBack(float dt)
 
 void LayerBullet::removeBullet()
 {
+}
+
+void LayerBullet::bulletCrashWithMonster(Bullet * bul, Vec2 pos)
+{
+			auto node = Sprite::createWithSpriteFrameName("fort1_burst1.png");
+			node->setPosition(pos);
+			auto anima = Animate::create(AnimationCache::getInstance()->getAnimation("BulletCrash"));
+			auto func = CallFuncN::create([&](Node *node) {
+						auto crash = static_cast<Sprite *>(node);
+						crash->stopAllActions();				
+						crash->getParent()->removeChild(node);
+						crash->removeAllChildrenWithCleanup(true);
+						
+			});
+			auto seq = Sequence::create(anima, func, NULL);
+			addChild(node, 25);
+			node->runAction(seq);
+			
 }
 
 
