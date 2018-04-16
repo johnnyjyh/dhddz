@@ -7,7 +7,7 @@ public:
 			Barrier();
 			~Barrier();
 			static Barrier *create();
-			virtual void bindBarrierSprite(Sprite *sp,int life,int typebar)=0;
+			virtual void bindBarrierSprite(Sprite *sp, CellsColor _color, int life)=0;
 
 
 			int _type;

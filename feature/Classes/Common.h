@@ -43,6 +43,10 @@ enum CellsColor
 			blue,
 			blueand,
 			purple,
+			snowBlock,
+			snowPlate,
+			stellPlate,
+			normalDiamond,
 };
 
 namespace TowerItem
@@ -95,11 +99,6 @@ namespace BarrierType
 						SnowPlate = 21,
 						SteelPlate = 22,
 
-			};
-
-			enum Boom
-			{
-						NormalBoom = 31,
 			};
 
 			enum Diamond

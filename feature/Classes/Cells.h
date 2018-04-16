@@ -13,6 +13,7 @@ public:
 			Rect getBoundingBox();
 			CellsColor getColor();
 			bool isSelected();
+			bool isCanSelected();
 
 			void loseLife();
 			int getLife();
@@ -22,6 +23,7 @@ public:
 			bool _isSelected;
 			CellsColor _col;
 			Sprite* _instance;
+			bool _isCanSelected{true};
 			bool isUsedLogic{ false };
 			bool _isTouchBack{ false };
 

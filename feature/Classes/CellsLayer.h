@@ -10,7 +10,7 @@ class CellsLayer:
 public:
 			CellsLayer();
 			~CellsLayer();
-			CREATE_FUNC(CellsLayer);
+			static CellsLayer * create();
 			bool init();
 
 			//数组装入格子   空 非空 7*5   只显示5层，装载10层，其余5层，用于消除后的迁移，用两个数组装载

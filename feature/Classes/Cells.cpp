@@ -60,6 +60,11 @@ bool Cells::isSelected()
 			return _isSelected;
 }
 
+bool Cells::isCanSelected()
+{
+			return _isCanSelected;
+}
+
 void Cells::loseLife()
 {
 			--_life;

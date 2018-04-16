@@ -8,6 +8,21 @@ CellsLayer::~CellsLayer()
 {
 }
 
+CellsLayer * CellsLayer::create()
+{
+			auto cellsLay = new (std::nothrow) CellsLayer;
+			if (cellsLay && cellsLay->init())
+			{
+						cellsLay->autorelease();
+			}
+			else
+			{
+						delete cellsLay;
+						cellsLay = nullptr;
+			}
+			return cellsLay;
+}
+
 bool CellsLayer::init()
 {
 			if (!Layer::init())
@@ -17,7 +32,7 @@ bool CellsLayer::init()
 			auto ret = false;
 			do 
 			{
-						initClippingNode();
+						initClippingNode();//用于cells区域遮盖分离上部分fight区域
 #ifdef _Test_
 						std::string shader1 = FileUtils::getInstance()->getStringFromFile("example_GreyScale.fsh");
 						GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader1.c_str()), "grey_effect");

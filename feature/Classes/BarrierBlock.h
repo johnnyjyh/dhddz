@@ -9,12 +9,19 @@ public:
 			BarrierBlock();
 			~BarrierBlock();
 			static BarrierBlock *create();
-			virtual void bindBarrierSprite(Sprite *sp, int life, int typebar);
+			virtual void bindBarrierSprite(Sprite *sp, CellsColor _color, int life);
+			Sprite *getSprite();
+			void loseLife();
+			int getLife();
+			int getColor();
+			bool isCanSelected();
 
 
-			int _type;
+
 			Sprite *_barrierBlock;
 			int _life;
+			CellsColor _color;
+			bool _isCanSelected{false};
 			CC_SYNTHESIZE(int, row, Row);
 			CC_SYNTHESIZE(int, column, Column);
 };

@@ -206,6 +206,7 @@ bool GamePlayerScene::loadAnimate()
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tiled/tiled.plist");
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tower/tower_life.plist");
 						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("playerItem/lifeItem.plist");
+						SpriteFrameCache::getInstance()->addSpriteFramesWithFile("tiled/barrier.plist");
 						
 						ret = true;
 			} while (0);
