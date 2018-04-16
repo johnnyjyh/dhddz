@@ -34,15 +34,13 @@ bool CellsLayer::init()
 			{
 						initClippingNode();//用于cells区域遮盖分离上部分fight区域
 #ifdef _Test_
-						std::string shader1 = FileUtils::getInstance()->getStringFromFile("example_GreyScale.fsh");
-						GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader1.c_str()), "grey_effect");
-						std::string shader2 = FileUtils::getInstance()->getStringFromFile("example_LightScale.fsh");
-						GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader2.c_str()), "light_effect");
+						
 #endif //_Test_
+						addGreyAndLightShader();
 						//初始化格子模块
 						initCells();
 						displayCells();
-						//coverFabric(Vec2(0, towerArea));
+						
 						
 						//auto eventDispa = Director::getInstance()->getEventDispatcher();
 						auto listen = EventListenerTouchOneByOne::create();
@@ -106,17 +104,35 @@ bool CellsLayer::initCells()
 						{
 									std::list<Cells *> listtemp;
 									for (int row = 0; row < 5; ++row)
-									{												
-												auto randnum = rand() % 100;
-												auto cell = createCells(randnum);
-												if (cell == nullptr)
+									{		
+
+
+												if (col == 3 && row == 2)
 												{
-															--row;
+															auto bar = BarrierBlock::create();
+															bar->bindBarrierSprite(Sprite::createWithSpriteFrameName("operating_obstacle_004.png"),snowBlock,2);
+															
+															log("%d", bar->getLife());
+															bar->setRow(row);
+															bar->setColumn(col);
+															listtemp.push_back(bar);														
 															continue;
+
 												}
-												cell->setRow(row);
-												cell->setColumn(col);
-												listtemp.push_back(cell);
+
+												{
+															auto randnum = rand() % 100;
+															auto cell = createCells(randnum);
+
+															if (cell == nullptr)
+															{
+																		--row;
+																		continue;
+															}
+															cell->setRow(row);
+															cell->setColumn(col);
+															listtemp.push_back(cell);
+												}
 									}
 									_displayCell.push_back(listtemp);
 						}
@@ -304,6 +320,7 @@ DrawNode * CellsLayer::coverFabric(Vec2 pos)
 			return nullptr;
 }
 
+//能否消除
 int CellsLayer::computeTheOneCell(std::vector<Cells *> &cells, Cells * cellCurrent, int count)
 {
 			if (cellCurrent == nullptr)
@@ -651,6 +668,14 @@ void CellsLayer::moveCell(Cells * cell, int col1, int row1, int col2, int row2)
 			}
 }
 
+void CellsLayer::addGreyAndLightShader()
+{
+			std::string shader1 = FileUtils::getInstance()->getStringFromFile("example_GreyScale.fsh");
+			GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader1.c_str()), "grey_effect");
+			std::string shader2 = FileUtils::getInstance()->getStringFromFile("example_LightScale.fsh");
+			GLProgramCache::getInstance()->addGLProgram(GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, shader2.c_str()), "light_effect");
+}
+
 
 
 void CellsLayer::initClippingNode()
@@ -781,5 +806,24 @@ void CellsLayer::onTouchEnded(Touch * touch, Event * unused_event)
 void CellsLayer::onTouchCancelled(Touch * touch, Event * unused_event)
 {
 			//取消，那么清除链表，恢复选择格子为FALSE；
-			
+			if (_touchCells.size() > 0)
+			{
+						recoverLightCells(_touchCells.back()->getColor());
+			}
+			if (_linkLineCache.size())
+			{
+						for (auto line : _linkLineCache)
+						{
+									line->removeFromParentAndCleanup(true);
+						}
+						_linkLineCache.clear();
+			}
+			if (_touchCells.size())
+			{
+						_touchCells.clear();
+			}
+			if (_touchMoveCells.size())
+			{
+						_touchMoveCells.clear();
+			}
 }

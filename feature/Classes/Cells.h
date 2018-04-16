@@ -8,20 +8,20 @@ public:
 			Cells();
 			~Cells();
 			static Cells *create();
-			void bindCellsSprite(Sprite *sp, CellsColor col, bool isSel);
-			Sprite *getSprite();
-			Rect getBoundingBox();
-			CellsColor getColor();
-			bool isSelected();
-			bool isCanSelected();
+			virtual void bindCellsSprite(Sprite *sp, CellsColor col, bool isSel);
+			virtual Sprite *getSprite();
+			virtual Rect getBoundingBox();
+			virtual CellsColor getColor();
+			virtual bool isSelected();
+			virtual bool isCanSelected();
 
-			void loseLife();
-			int getLife();
+			virtual void loseLife();
+			virtual int getLife();
 
 
 			int _life{1};
 			bool _isSelected;
-			CellsColor _col;
+			CellsColor _color;
 			Sprite* _instance;
 			bool _isCanSelected{true};
 			bool isUsedLogic{ false };

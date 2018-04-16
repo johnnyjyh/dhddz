@@ -28,35 +28,42 @@ BarrierBlock * BarrierBlock::create()
 
 void BarrierBlock::bindBarrierSprite(Sprite *sp, CellsColor _color, int life)
 {
-			_barrierBlock = sp;
+			_instance = sp;
 			_life = life;
 			_color = _color;
 			setRow(-1);
 			setColumn(-1);
-			addChild(_barrierBlock, 35);
+			addChild(_instance, 35);
 }
 
-Sprite * BarrierBlock::getSprite()
-{
-			return _barrierBlock;
-}
-
-void BarrierBlock::loseLife()
-{
-			--_life;
-}
-
-int BarrierBlock::getLife()
-{
-			return _life;
-}
-
-int BarrierBlock::getColor()
-{
-			return _color;
-}
-
+//Sprite * BarrierBlock::getSprite()
+//{
+//			return _barrierBlock;
+//}
+//
+//void BarrierBlock::loseLife()
+//{
+//			--_life;
+//}
+//
+//int BarrierBlock::getLife()
+//{
+//			return _life;
+//}
+//
+//CellsColor BarrierBlock::getColor()
+//{
+//			return _color;
+//}
+//
 bool BarrierBlock::isCanSelected()
 {
 			return _isCanSelected;
+}
+
+Rect BarrierBlock::getBoundingBox()
+{
+			auto rectbak = _instance->getBoundingBox();
+			auto pos = convertToWorldSpace(rectbak.origin);
+			return Rect(pos.x + rectbak.size.width / 6, pos.y + rectbak.size.height / 6, rectbak.size.width / 1.5, rectbak.size.height / 1.5);
 }

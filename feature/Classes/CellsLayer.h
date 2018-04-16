@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "Cells.h"
+#include "BarrierBlock.h"
 
 class CellsLayer:
 			public Layer
@@ -12,6 +13,7 @@ public:
 			~CellsLayer();
 			static CellsLayer * create();
 			bool init();
+
 
 			//数组装入格子   空 非空 7*5   只显示5层，装载10层，其余5层，用于消除后的迁移，用两个数组装载
 			//显示格子
@@ -64,10 +66,17 @@ public:
 
 			void moveCell(Cells *cell,int col1, int row1, int col2, int row2);//移动显示结构，并改变存储位置
 
+			void addGreyAndLightShader();
 
 			//遮盖技术
 			//选择用clippingNode
 			void initClippingNode();
+			//检查遮挡块
+			void checkBarrier();
+			//检查snowblock
+			//检查snowplate
+			//检查stealplate
+			//检查normalDiamond
 
 
 			//以下四个继承来的虚函数用于来集成控制函数
