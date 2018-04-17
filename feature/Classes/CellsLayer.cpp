@@ -301,7 +301,8 @@ void CellsLayer::destroyCells()
 									_desCell.clear();
 						}
 						
-						this->preCells();
+						this->preCells2();
+						
 			}
 
 }
@@ -359,11 +360,11 @@ void CellsLayer::preCells()
 												{
 															if (static_cast<unsigned int>(row) < cells.size())
 															{																	
-																		if ((*cell)->getRow() == row)
+																		if ((*cell)->getRow() == row )
 																		{
 																					++cell;
 																					continue;
-																		}
+																		}																	
 																		(*cell)->setRow(row);
 																		moveCell((*cell), 0, 0, colRecord, row);
 																		++cell;
@@ -390,6 +391,98 @@ void CellsLayer::preCells()
 
 						restoreStalemate();
 						_isCanRunning = true;
+			}
+}
+
+void CellsLayer::preCells2()
+{
+			if (_displayCell.size() > 0)
+			{
+						auto colRecord = 0;
+						for (auto &cells : _displayCell)
+						{
+									if (cells.size() == 5)
+									{
+												++colRecord;
+												continue;
+									}
+									else if (cells.size() < 5 && cells.size() >= 0)
+									{
+												auto cell = cells.begin();
+												for (int row = 0; row < 5; ++row)
+												{
+
+															if (static_cast<unsigned int>(row )< cells.size())
+															{
+																		if (*cell && ((*cell)->getRow() == row && (*cell)->getColor() < snowBlock))
+																		{
+																					++cell;
+																					continue;
+																		}
+																		else if (*cell && ((*cell)->getRow() != row && (*cell)->getColor() < snowBlock))
+																		{
+																					(*cell)->setRow(row);
+																					moveCell((*cell), 0, 0, colRecord, row);
+																					++cell;
+																		}																
+															}															
+												}
+									}
+									else
+									{
+												assert(cells.size() > 5);
+									}
+									++colRecord;
+						}
+
+						restoreStalemate();
+						_isCanRunning = true;
+			}
+}
+
+Cells * CellsLayer::getUsableCell(Cells * cell,int col,int row)
+{
+			if (col < 0 || col >= 7 || row >= 5)
+			{
+						return nullptr;
+			}
+			else if (cell && cell->getColor() < snowBlock)
+			{
+						return cell;
+			}
+			else
+			{
+
+						auto colbak = col;
+						auto rowbak = row;
+						auto cellsiter = _displayCell.begin();
+						for (int i = 0; i < col; ++i)
+						{
+									++cellsiter;
+						}
+						auto celliter = cellsiter->begin();
+						for (int i = 0; i < row; ++i)
+						{
+									++celliter;
+						}
+
+						if ( (*celliter)->getColor() >= snowBlock)
+						{
+									if (col != 0)
+									{
+												getUsableCell(nullptr, col-1 , row);
+									}
+									else
+									{
+												getUsableCell(nullptr, col +1, row);
+									}
+						}
+						else
+						{
+									getUsableCell(*celliter, col, row + 1);
+						}
+						
+
 			}
 }
 
@@ -787,10 +880,8 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 {
 			auto ret = false;
 			do 
-			{
-						
+			{					
 						//检索触摸地方，如果是格子，继续
-
 						if (!checkCells() && !_isCanRunning)
 						{
 									return ret;
@@ -801,9 +892,7 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 									for (auto cells : _displayCell)
 									{
 												for (auto cell : cells)
-												{
-															log("cell: %f::%f,touch: %f :: %f", cell->getPosition().x, cell->getPosition().y, touch->getLocation().x, touch->getLocation().y);
-															
+												{																													
 															if (cell &&( cell->getBoundingBox().containsPoint(touch->getLocation()) && cell->getColor()<snowBlock))
 															{
 																		cell->_isSelected = true;

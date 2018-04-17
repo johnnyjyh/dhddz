@@ -39,6 +39,10 @@ public:
 			void supplyCells();
 			bool isPreCells();
 			void preCells();
+			
+			void preCells2();
+			
+			Cells *getUsableCell(Cells *cell, int col, int row);
 
 			DrawNode *coverFabric(Vec2 pos);
 
