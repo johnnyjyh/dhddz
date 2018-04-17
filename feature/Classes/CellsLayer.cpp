@@ -23,6 +23,76 @@ CellsLayer * CellsLayer::create()
 			return cellsLay;
 }
 
+auto CellsLayer::checkSnowBlock(std::list<Cells *> &cells)
+{
+			auto ret = false;
+			do
+			{
+						
+						if (_snowBlock.size())
+						{
+									
+									for (auto block : _snowBlock)
+									{	
+												for (auto cell : cells)
+												{
+															if (abs(cell->getRow() - block->getRow()) + abs(cell->getColumn() - block->getColumn()) == 1)
+															{
+																		block->loseLife();
+																		break;
+															}
+												}
+												
+									}
+
+
+									for (auto  block=_snowBlock.begin();block!=_snowBlock.end();)
+									{
+												if (!(*block))
+												{
+															continue;
+												}
+												auto iter = _displayCell.begin();
+												if ((*block)->getLife() <= 0)
+												{
+															CCASSERT((*block)->getColumn() <= 5, "destroy block get wrong column!");
+															for (int i = 0; i <( *block)->getColumn(); ++i)
+															{
+																		++iter;
+															}
+															auto blockbak = *block;																																								
+															(*iter).remove(*block);
+														    block=_snowBlock.erase(block);
+															(blockbak)->removeAllChildren();
+															(blockbak)->removeFromParentAndCleanup(true);
+															(blockbak) = nullptr;																																																																																									
+												}
+												else
+												{
+															++block;
+												}
+																					
+									}
+									
+								
+									
+						}
+						ret = true;
+			} while (0);
+			return ret;
+}
+
+auto  CellsLayer::checkBarrier(std::list<Cells *> &cells)
+{
+			auto ret = false;
+			do
+			{
+						CC_BREAK_IF(!checkSnowBlock(cells));
+						ret = true;
+			} while (0);
+			return ret;
+}
+
 bool CellsLayer::init()
 {
 			if (!Layer::init())
@@ -107,15 +177,14 @@ bool CellsLayer::initCells()
 									{		
 
 
-												if (col == 3 && row == 2)
+												if (col == 3 && (row == 2 || row ==3))
 												{
 															auto bar = BarrierBlock::create();
-															bar->bindBarrierSprite(Sprite::createWithSpriteFrameName("operating_obstacle_004.png"),snowBlock,2);
-															
-															log("%d", bar->getLife());
+															bar->bindBarrierSprite(Sprite::createWithSpriteFrameName("operating_obstacle_004.png"),snowBlock,snowBlockHealth);																													
 															bar->setRow(row);
 															bar->setColumn(col);
-															listtemp.push_back(bar);														
+															listtemp.push_back(bar);
+															_snowBlock.push_back(bar);
 															continue;
 
 												}
@@ -163,12 +232,18 @@ void CellsLayer::displayCells()
 						for (auto cell : cells)
 						{
 									
+									
 #ifdef _Test_
 									cell->getSprite()->setScale(0.5);								
 #endif //_Test_
 									//cell->getSprite()->setAnchorPoint(Vec2::ZERO);
 									cell->setPosition(Vec2((getSingleTiledSize.x)*(cell->getColumn()+0.5), (getSingleTiledSize.y + (tileinterval - 95 *0.5))*(cell->getRow()+0.5)));
-												
+									
+									if (cell->getColor() == snowBlock)
+									{
+												_clipNode->addChild(cell, 31);
+												continue;
+									}
 									_clipNode->addChild(cell,30);
 									
 						}
@@ -197,8 +272,10 @@ void CellsLayer::destroyCells()
 			{
 						_isCanRunning = false;
 						//计算分数
-						
 						_cellScore += _touchMoveCells.size();
+						//处理遮挡块
+						checkBarrier(_touchMoveCells);										
+						//处理消除块
 						for (auto desCells : _touchMoveCells)
 						{
 
@@ -223,6 +300,7 @@ void CellsLayer::destroyCells()
 									}
 									_desCell.clear();
 						}
+						
 						this->preCells();
 			}
 
@@ -415,9 +493,7 @@ bool CellsLayer::isStalemate()
 												if (isCanBak > isCan)
 												{
 															isCan = isCanBak;
-												}
-
-												
+												}												
 									}
 
 
@@ -618,8 +694,11 @@ void CellsLayer::showLightCells(CellsColor col)
 			{
 						for (auto cell : cells)
 						{
-
-									if (cell->getColor()!=col)
+									if (cell->getColor() >= snowBlock)
+									{
+												continue;
+									}
+									if (cell->getColor()!=col )
 									{
 												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("grey_effect"));														
@@ -643,6 +722,10 @@ void CellsLayer::recoverLightCells(CellsColor col)
 			{
 						for (auto cell : cells)
 						{
+									if (cell->getColor() >= snowBlock)
+									{
+												continue;
+									}
 									if (cell->getColor() != col)
 									{
 												//GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
@@ -696,12 +779,16 @@ void CellsLayer::initClippingNode()
 
 }
 
+
+
+
+
 bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 {
 			auto ret = false;
 			do 
 			{
-					
+						
 						//检索触摸地方，如果是格子，继续
 
 						if (!checkCells() && !_isCanRunning)
@@ -715,7 +802,9 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 									{
 												for (auto cell : cells)
 												{
-															if (cell&& cell->getBoundingBox().containsPoint(touch->getLocation())  )
+															log("cell: %f::%f,touch: %f :: %f", cell->getPosition().x, cell->getPosition().y, touch->getLocation().x, touch->getLocation().y);
+															
+															if (cell &&( cell->getBoundingBox().containsPoint(touch->getLocation()) && cell->getColor()<snowBlock))
 															{
 																		cell->_isSelected = true;
 																		showLightCells(cell->getColor());

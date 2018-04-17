@@ -26,11 +26,11 @@ BarrierBlock * BarrierBlock::create()
 			return ret;
 }
 
-void BarrierBlock::bindBarrierSprite(Sprite *sp, CellsColor _color, int life)
+void BarrierBlock::bindBarrierSprite(Sprite *sp, CellsColor color, int life)
 {
 			_instance = sp;
 			_life = life;
-			_color = _color;
+			_color = color;
 			setRow(-1);
 			setColumn(-1);
 			addChild(_instance, 35);

@@ -25,6 +25,14 @@ public:
 			//游戏过程为，  显示格子->判断消除 ->人工触发->消除格子->补充格子 然后循环
 			Cells *createCells(int randnum);
 			bool initCells();
+			//检查snowblock
+			auto  checkSnowBlock(std::list<Cells *> &cells);
+			//检查snowplate
+			//检查stealplate
+			//检查normalDiamond
+			//检查遮挡块
+			auto checkBarrier(std::list<Cells *> &cells);
+
 			void displayCells();
 			bool isCanDestroyCells();
 			void destroyCells();
@@ -71,12 +79,9 @@ public:
 			//遮盖技术
 			//选择用clippingNode
 			void initClippingNode();
-			//检查遮挡块
-			void checkBarrier();
-			//检查snowblock
-			//检查snowplate
-			//检查stealplate
-			//检查normalDiamond
+			
+			
+			
 
 
 			//以下四个继承来的虚函数用于来集成控制函数
@@ -97,6 +102,8 @@ public:
 			std::list<DrawNode *> _linkLineCache;
 			std::list<Cells *> _touchCells;
 			std::list<Cells *> _touchMoveCells;
+			std::list<BarrierBlock *> _snowBlock;
+			std::list<Cells *> _hintCells;
 
 			ClippingNode *_clipNode;
 			bool _isCanRunning{false};

@@ -9,7 +9,7 @@ public:
 			BarrierBlock();
 			~BarrierBlock();
 			static BarrierBlock *create();
-			void bindBarrierSprite(Sprite *sp, CellsColor _color, int life);
+			void bindBarrierSprite(Sprite *sp, CellsColor color, int life);
 
 			bool isCanSelected();
 			Rect getBoundingBox();

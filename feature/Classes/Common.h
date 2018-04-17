@@ -49,6 +49,21 @@ enum CellsColor
 			normalDiamond,
 };
 
+enum CellsHealth
+{
+			redHealth = 1,
+			pinkHealth=1,
+			yellowHealth=1,
+			greenHealth=1,
+			blueHealth=1,
+			blueandHealth=1,
+			purpleHealth=1,
+			snowBlockHealth=1,
+			snowPlateHealth=1,
+			stellPlateHealth=1,
+			normalDiamondHealth=1,
+};
+
 namespace TowerItem
 {
 			enum TowerOrignal
