@@ -55,7 +55,7 @@ auto CellsLayer::checkSnowBlock(std::list<Cells *> &cells)
 												auto iter = _displayCell.begin();
 												if ((*block)->getLife() <= 0)
 												{
-															CCASSERT((*block)->getColumn() <= 5, "destroy block get wrong column!");
+															CCASSERT((*block)->getColumn() <= 7, "destroy block get wrong column!");
 															for (int i = 0; i <( *block)->getColumn(); ++i)
 															{
 																		++iter;
@@ -284,6 +284,10 @@ void CellsLayer::destroyCells()
 									_desCell.push_back(desCells);
 						}
 						
+					
+						
+						this->preCells2();
+
 						if (_desCell.size())
 						{
 									for (auto desCell : _desCell)
@@ -300,8 +304,6 @@ void CellsLayer::destroyCells()
 									}
 									_desCell.clear();
 						}
-						
-						this->preCells2();
 						
 			}
 
@@ -424,7 +426,12 @@ void CellsLayer::preCells2()
 																					(*cell)->setRow(row);
 																					moveCell((*cell), 0, 0, colRecord, row);
 																					++cell;
-																		}																
+																		}
+																		else if (*cell && ((*cell)->getRow() != row && (*cell)->getColor() >= snowBlock))
+																		{
+																					
+																		}
+
 															}															
 												}
 									}
@@ -440,13 +447,13 @@ void CellsLayer::preCells2()
 			}
 }
 
-Cells * CellsLayer::getUsableCell(Cells * cell,int col,int row)
+std::list<Cells *>::iterator  & CellsLayer::getUsableCell(std::list<Cells *>::iterator  &cell,int col,int row)
 {
 			if (col < 0 || col >= 7 || row >= 5)
 			{
 						return nullptr;
 			}
-			else if (cell && cell->getColor() < snowBlock)
+			else if ((*cell) && (*cell->getColor() < snowBlock && *cell->getLife()>0))
 			{
 						return cell;
 			}
@@ -466,13 +473,13 @@ Cells * CellsLayer::getUsableCell(Cells * cell,int col,int row)
 									++celliter;
 						}
 
-						if ( (*celliter)->getColor() >= snowBlock)
+						if ( (*celliter)->getColor() >= snowBlock && (*celliter)->getLife()>0)
 						{
-									if (col != 0)
+									if (col > 0 && col<7)
 									{
 												getUsableCell(nullptr, col-1 , row);
 									}
-									else
+									else if(col==0)
 									{
 												getUsableCell(nullptr, col +1, row);
 									}
@@ -578,7 +585,7 @@ bool CellsLayer::isStalemate()
 									}
 									auto isCan = 0;
 									auto isCanBak = 0;
-									std::vector<Cells *> recordCell;
+									//std::vector<Cells *> recordCell;
 									
 									for (unsigned int i=0;i<calcColor.size();++i)
 									{												

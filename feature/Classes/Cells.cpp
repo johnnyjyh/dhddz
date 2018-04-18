@@ -37,6 +37,20 @@ void Cells::bindCellsSprite(Sprite * sp, CellsColor col, bool isSel)
 			addChild(sp,30);
 }
 
+void Cells::addPlate()
+{
+			for (int i = 0; i < 4; ++i)
+			{
+						if (_usablePlate[i])
+						{
+									//根据血量选择精灵
+									//初始化精灵
+									//设置位置
+									//添加精灵
+						}
+			}
+}
+
 Sprite *Cells::getSprite()
 {
 			return _instance;
@@ -72,4 +86,11 @@ void Cells::loseLife()
 int Cells::getLife()
 {
 			return _life;
+}
+
+void Cells::updateCell()
+{
+
+			//更新格子主精灵状态
+			//更新plate状态
 }

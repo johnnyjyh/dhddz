@@ -42,7 +42,7 @@ public:
 			
 			void preCells2();
 			
-			Cells *getUsableCell(Cells *cell, int col, int row);
+			std::list<Cells *>::iterator  &getUsableCell(std::list<Cells *>::iterator  &cell, int col, int row);
 
 			DrawNode *coverFabric(Vec2 pos);
 
