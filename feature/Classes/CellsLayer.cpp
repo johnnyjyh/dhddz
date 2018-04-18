@@ -401,95 +401,127 @@ void CellsLayer::preCells2()
 			if (_displayCell.size() > 0)
 			{
 						auto colRecord = 0;
+						auto row = 0;
 						for (auto &cells : _displayCell)
 						{
-									if (cells.size() == 5)
+									row = 0;
+
+									for (auto cell = cells.begin(); cell != cells.end();)
 									{
-												++colRecord;
-												continue;
-									}
-									else if (cells.size() < 5 && cells.size() >= 0)
-									{
-												auto cell = cells.begin();
-												for (int row = 0; row < 5; ++row)
+
+												if (*cell && (*cell)->getColor() < snowBlock && (*cell)->getLife() > 0)
 												{
-
-															if (static_cast<unsigned int>(row )< cells.size())
-															{
-																		if (*cell && ((*cell)->getRow() == row && (*cell)->getColor() < snowBlock))
-																		{
-																					++cell;
-																					continue;
-																		}
-																		else if (*cell && ((*cell)->getRow() != row && (*cell)->getColor() < snowBlock))
-																		{
-																					(*cell)->setRow(row);
-																					moveCell((*cell), 0, 0, colRecord, row);
-																					++cell;
-																		}
-																		else if (*cell && ((*cell)->getRow() != row && (*cell)->getColor() >= snowBlock))
-																		{
-																					
-																		}
-
-															}															
+															++cell;
+															++row;
+															continue;
 												}
-									}
-									else
-									{
-												assert(cells.size() > 5);
+												else if (*cell && (*cell)->getColor() < snowBlock && (*cell)->getLife() <= 0)
+												{
+															auto cellbak = cell;
+															++cellbak;
+															*cell = getUsableCell(cell, cellbak,cell);
+															if (*cell != nullptr)
+															{
+																		moveCell((*cell), 0, 0, colRecord, row);
+															}
+															++row;
+															++cell;
+												}
+												else if (*cell && (*cell)->getColor() >= snowBlock && (*cell)->getLife() > 0)
+												{
+															++row;
+															++cell;
+												}
+												else if (*cell && (*cell)->getColor() >= snowBlock && (*cell)->getLife() <= 0)
+												{
+															auto cellbak = cell;
+															++cellbak;
+															*cell = getUsableCell(cell, cellbak,cell);
+															if (*cell != nullptr)
+															{
+																		moveCell((*cell), 0, 0, colRecord, row);
+															}
+															++row;
+															++cell;
+												}
+												else 
+												{															
+															++row;
+															++cell;
+												}
 									}
 									++colRecord;
 						}
+
 
 						restoreStalemate();
 						_isCanRunning = true;
 			}
 }
 
-std::list<Cells *>::iterator  & CellsLayer::getUsableCell(std::list<Cells *>::iterator  &cell,int col,int row)
+Cells  *CellsLayer::getUsableCell(std::list<Cells *>::iterator  souceCell, std::list<Cells *>::iterator  &destCellRef, std::list<Cells *>::iterator  cellBak)
 {
-			if (col < 0 || col >= 7 || row >= 5)
+			if ((*souceCell)->getColumn() ==0 && (*destCellRef)->getColor()>=snowBlock)
 			{
 						return nullptr;
 			}
-			else if ((*cell) && (*cell->getColor() < snowBlock && *cell->getLife()>0))
+			else if ( (*destCellRef)!=nullptr && ((*destCellRef)->getColor() < snowBlock && (*destCellRef)->getLife()>0))
 			{
-						return cell;
+						Cells* cellb = *destCellRef;
+						(*cellBak)->setColumn(cellb->getColumn());
+						(*cellBak)->setRow(cellb->getRow());
+						//*destCellRef = *cellBak;
+						log("cell pre: %d %d, %d %d", (*cellBak)->getColor(), (*cellBak)->getColumn(), (*cellBak)->getRow(), (*cellBak)->getLife());
+						return cellb;
 			}
 			else
 			{
-
-						auto colbak = col;
-						auto rowbak = row;
-						auto cellsiter = _displayCell.begin();
-						for (int i = 0; i < col; ++i)
+						std::list<Cells *>::iterator  destCell = destCellRef;
+						if ((*destCell)->getColor() >= snowBlock && (*destCell)->getLife() > 0)
 						{
-									++cellsiter;
-						}
-						auto celliter = cellsiter->begin();
-						for (int i = 0; i < row; ++i)
-						{
-									++celliter;
-						}
-
-						if ( (*celliter)->getColor() >= snowBlock && (*celliter)->getLife()>0)
-						{
-									if (col > 0 && col<7)
+									if ((*destCell)->getColumn() > 0 && (*destCell)->getColumn() < 7)
 									{
-												getUsableCell(nullptr, col-1 , row);
+												auto col = (*destCell)->getColumn();
+												auto row = (*destCell)->getRow();
+												auto iters = _displayCell.begin();
+												for (int i = 0; i < col - 1; ++i)
+												{
+															++iters;
+												}
+												auto iter = (*iters).begin();
+												for (int i = 0; i < row; ++i)
+												{
+															++iter;
+												}
+												return getUsableCell(destCell, iter,cellBak);
 									}
-									else if(col==0)
+									else if ((*destCell)->getColumn() == 0)
 									{
-												getUsableCell(nullptr, col +1, row);
+												auto col = (*destCell)->getColumn();
+												auto row = (*destCell)->getRow();
+												auto iters = _displayCell.begin();
+												for (int i = 0; i < col + 1; ++i)
+												{
+															++iters;
+												}
+												auto iter = (*iters).begin();
+												for (int i = 0; i < row; ++i)
+												{
+															++iter;
+												}
+												return getUsableCell(destCell, iter,cellBak);
+									}
+									else
+									{
+												return nullptr;
 									}
 						}
 						else
 						{
-									getUsableCell(*celliter, col, row + 1);
-						}
-						
-
+									auto cellbak = destCell;
+									++cellbak;
+									return getUsableCell(destCell,cellbak,cellBak);
+						}				
 			}
 }
 
@@ -844,6 +876,7 @@ void CellsLayer::moveCell(Cells * cell, int col1, int row1, int col2, int row2)
 {
 			if (cell != nullptr)
 			{
+						cell->stopAllActions();
 						auto moveto = MoveTo::create(0.5, Vec2((getSingleTiledSize.x)*(col2 + 0.5), (getSingleTiledSize.y + (tileinterval - 95 * 0.5))*(row2 + 0.5)));
 						cell->runAction(moveto);
 						cell->setColumn(col2);

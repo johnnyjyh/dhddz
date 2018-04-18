@@ -18,6 +18,9 @@ public:
 
 
 			bool _isCanSelected{false};
+
+			CC_SYNTHESIZE(int, _row, Row);
+			CC_SYNTHESIZE(int, _column, Column);
 };
 
 #endif //__BarrierBlock_H__

@@ -2,7 +2,6 @@
 #define __CellsLayer_H__
 
 #include "Common.h"
-#include "Cells.h"
 #include "BarrierBlock.h"
 
 class CellsLayer:
@@ -42,7 +41,7 @@ public:
 			
 			void preCells2();
 			
-			std::list<Cells *>::iterator  &getUsableCell(std::list<Cells *>::iterator  &cell, int col, int row);
+			Cells *getUsableCell(std::list<Cells *>::iterator  souceCell, std::list<Cells *>::iterator  &destCellRef, std::list<Cells *>::iterator  cellBak);
 
 			DrawNode *coverFabric(Vec2 pos);
 
