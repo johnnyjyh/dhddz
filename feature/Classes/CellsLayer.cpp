@@ -282,9 +282,9 @@ void CellsLayer::destroyCells()
 									_desCell.push_back(desCells);
 						}
 						
-					
 						
-						this->preCells2();
+						preCells1();
+						//this->preCells2();
 
 						if (_desCell.size())
 						{
@@ -302,6 +302,7 @@ void CellsLayer::destroyCells()
 									}
 									_desCell.clear();
 						}
+
 						restoreStalemate();
 			}
 
@@ -394,39 +395,135 @@ void CellsLayer::preCells()
 			}
 }
 
+void CellsLayer::preCells1()
+{
+			if (_displayCell.size() > 0)
+			{
+						auto colRecord = 0;
+						auto row = 0;
+						for (auto cells = _displayCell.begin(); cells != _displayCell.end();)
+						{
+									row = 0;
+
+									for (auto cell = cells->begin(); cell != cells->end();)
+									{
+
+												if ((*cell) != nullptr && (*cell)->getLife() <= 0)
+												{
+															auto getcell = getUsableCell1(cell, (*cell)->getColumn(), (*cell)->getRow());
+															if (getcell != nullptr)
+															{
+																		*cell = getcell;
+																		moveCell((*cell), 0, 0, colRecord, row);
+																		
+															}
+												}
+
+												++row;
+												++cell;
+
+									}
+									++cells;
+									++colRecord;
+						}		
+						_isCanRunning = true;
+			}
+}
+
 void CellsLayer::preCells2()
 {
 			if (_displayCell.size() > 0)
 			{
 						auto colRecord = 0;
 						auto row = 0;
-						for (auto &cells : _displayCell)
+						for (auto cells = _displayCell.begin(); cells != _displayCell.end();)
 						{
 									row = 0;
 
-									for (auto cell = cells.begin(); cell != cells.end();)
+									for (auto cell = cells->begin(); cell != cells->end();)
 									{
-											
-												 if ((*cell) !=nullptr && (*cell)->getLife() <= 0)
-												{																											
-															auto getcell= getUsableCell(cell, (*cell)->getColumn(), (*cell)->getRow()+1);
+
+												if ((*cell) != nullptr && (*cell)->getLife() <= 0)
+												{
+															auto getcell = getUsableCell(cell, (*cell)->getColumn(), (*cell)->getRow());
 															if (getcell != nullptr)
 															{
+
 																		*cell = getcell;
 																		moveCell((*cell), 0, 0, colRecord, row);
-															}														
-												}											
-												 ++row;
-												 ++cell;
+																		//preCells2();
+															}
+												}
+
+												++row;
+												++cell;
 
 									}
+									++cells;
 									++colRecord;
+						}
+						
+
+						_isCanRunning = true;
+			}
+
+}
+
+Cells * CellsLayer::getUsableCell1(std::list<Cells*>::iterator & souceCell, int col, int row)
+{
+			if (col < 0 || col>6 || row > 4 || row < 0)
+			{
+						return nullptr;
+			}
+			else
+			{
+						auto cells = _displayCell.begin();
+
+						for (int i = 0; i < col; ++i)
+						{
+
+									++cells;
+									if (cells == _displayCell.end())
+									{
+												return nullptr;
+									}
+						}
+
+						auto cell = (*cells).begin();
+						for (int i = 0; i < row; ++i)
+						{
+									++cell;
+									if (cell == cells->end())
+									{
+												return nullptr;
+									}
+						}
+
+						Cells *celltemp1 = nullptr;
+
+						if ((*cell)->getLife() <= 0)
+						{
+									celltemp1 = getUsableCell1(souceCell, col, row + 1);
+									return celltemp1;
+						}
+						else
+						{
+									if ((*cell)->getColor() >= snowBlock)
+									{
+												return nullptr;
+									}
+									else
+									{
+												Cells *cellbak = *cell;
+												(*souceCell)->setRow(cellbak->getRow());
+												*cell = *souceCell;
+												return cellbak;
+									}
 						}
 
 
-						
-						_isCanRunning = true;
 			}
+
 }
 
 Cells  *CellsLayer::getUsableCell(std::list<Cells *>::iterator  souceCell, std::list<Cells *>::iterator  &destCellRef, std::list<Cells *>::iterator  cellBak)
@@ -532,7 +629,7 @@ Cells  *CellsLayer::getUsableCell(std::list<Cells *>::iterator  souceCell, std::
 			return nullptr;
 }
 
-Cells * CellsLayer::getUsableCell(std::list<Cells*>::iterator souceCell, int col, int row)
+Cells * CellsLayer::getUsableCell(std::list<Cells*>::iterator &souceCell, int col, int row)
 {
 			if (col < 0 || col>6 || row > 4 || row < 0)
 			{
@@ -541,41 +638,39 @@ Cells * CellsLayer::getUsableCell(std::list<Cells*>::iterator souceCell, int col
 			else
 			{
 						auto cells = _displayCell.begin();
-						for (int i = 0; i < col; ++i)
-						{
+						
+						for (int i = 0; i < col ; ++i)
+						{				
+									
+									++cells;
 									if (cells == _displayCell.end())
 									{
 												return nullptr;
 									}
-									++cells;
 						}
+						
 						auto cell = (*cells).begin();
 						for (int i = 0; i < row; ++i)
 						{
-									if (cell == (*cells).end())
+									++cell;
+									if (cell == cells->end())
 									{
 												return nullptr;
 									}
-									++cell;
 						}
+						log("%d,%d", col, row);
 						Cells *celltemp1 = nullptr;
+
 						if ((*cell)->getLife() <= 0)
 						{
-									celltemp1 = getUsableCell(souceCell, col, row + 1);
-									if (celltemp1 == nullptr)
+									celltemp1 = getUsableCell(souceCell, col, row+1);
+									if (celltemp1 == nullptr )
 									{
-												celltemp1 = getUsableCell(souceCell, col - 1, row);
+												celltemp1 = getUsableCell(souceCell, col - 1, row+1);
 									}
 									if (celltemp1 == nullptr)
 									{
-												celltemp1 = getUsableCell(souceCell, col + 1, row);
-									}
-									if (celltemp1 != nullptr)
-									{
-												Cells *cellbak = celltemp1;
-												(*souceCell)->setColumn(cellbak->getColumn());
-												(*souceCell)->setRow(cellbak->getRow());
-												*cell = cellbak;
+												celltemp1 = getUsableCell(souceCell, col + 1, row+1);
 									}
 									return celltemp1;
 						}
@@ -583,19 +678,7 @@ Cells * CellsLayer::getUsableCell(std::list<Cells*>::iterator souceCell, int col
 						{
 									if ((*cell)->getColor() >= snowBlock)
 									{
-												celltemp1 = getUsableCell(souceCell, col - 1, row);
-												if (celltemp1 == nullptr)
-												{
-															celltemp1 = getUsableCell(souceCell, col + 1, row);
-												}
-												if (celltemp1 != nullptr)
-												{
-															Cells *cellbak = celltemp1;
-															(*souceCell)->setColumn(cellbak->getColumn());
-															(*souceCell)->setRow(cellbak->getRow());
-															*cell = cellbak;
-												}
-												return celltemp1;
+												return nullptr;
 									}
 									else
 									{
@@ -606,29 +689,29 @@ Cells * CellsLayer::getUsableCell(std::list<Cells*>::iterator souceCell, int col
 												return cellbak;
 									}
 						}
-						
+
 
 			}
+			
 }
 
-Cells * CellsLayer::getColRowCell(int col, int row)
+Cells *CellsLayer::getColRowCell(int col, int row)
 {
+			if (col < 0 || col>6 || row > 4 || row < 0)
+			{
+						return nullptr;
+			}
+
 			auto cells = _displayCell.begin();
 			for (int i = 0; i < col; ++i)
 			{
-						if (cells == _displayCell.end())
-						{
-									return nullptr;
-						}
+
 						++cells;
 			}
 			auto cell = (*cells).begin();
 			for (int i = 0; i < row; ++i)
 			{
-						if (cell == (*cells).end())
-						{
-									return nullptr;
-						}
+
 						++cell;
 			}
 			return *cell;

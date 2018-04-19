@@ -77,13 +77,22 @@ namespace TowerItem
 //格子生成几率，用于制作关卡和测试
 enum CellCreatProbability
 {
-			redProbability =10,
-			pinkProbability = 5,
-			yellowProbability = 25,
-			greenProbability =5,
-			blueProbability = 20,
-			blueandProbability = 25,
-			purpleProbability = 10,
+			//redProbability = 10,
+			//pinkProbability = 5,
+			//yellowProbability = 25,
+			//greenProbability = 5,
+			//blueProbability = 20,
+			//blueandProbability = 25,
+			//purpleProbability = 10,
+
+			redProbability = 100,
+			pinkProbability = 0,
+			yellowProbability = 0,
+			greenProbability = 0,
+			blueProbability = 0,
+			blueandProbability = 0,
+			purpleProbability = 0,
+
 
 };
 

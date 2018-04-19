@@ -39,11 +39,14 @@ public:
 			bool isPreCells();
 			void preCells();
 			
+			void preCells1();
 			void preCells2();
 
 			
+			Cells *getUsableCell1(std::list<Cells *>::iterator  &souceCell, int col, int row);
 			Cells *getUsableCell(std::list<Cells *>::iterator  souceCell, std::list<Cells *>::iterator  &destCellRef, std::list<Cells *>::iterator  cellBak);
-			Cells *getUsableCell(std::list<Cells *>::iterator  souceCell, int col, int row);
+			
+			Cells *getUsableCell(std::list<Cells *>::iterator  &souceCell, int col, int row);
 
 			Cells *getColRowCell(int col, int row);
 
