@@ -34,7 +34,7 @@ enum Score
 			monsterScore1 = 1,
 };
 
-enum CellsColor
+enum CellsColor : int
 {
 			red = 0,
 			pink,

@@ -40,8 +40,12 @@ public:
 			void preCells();
 			
 			void preCells2();
+
 			
 			Cells *getUsableCell(std::list<Cells *>::iterator  souceCell, std::list<Cells *>::iterator  &destCellRef, std::list<Cells *>::iterator  cellBak);
+			Cells *getUsableCell(std::list<Cells *>::iterator  souceCell, int col, int row);
+
+			Cells *getColRowCell(int col, int row);
 
 			DrawNode *coverFabric(Vec2 pos);
 
