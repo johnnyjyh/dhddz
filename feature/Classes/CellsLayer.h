@@ -42,6 +42,8 @@ public:
 			void preCells1();
 			void preCells2();
 
+			Cells *getUsableCol(std::list<Cells *>::iterator  &souceCell, int col, int row);
+
 			
 			Cells *getUsableCell1(std::list<Cells *>::iterator  &souceCell, int col, int row);
 			Cells *getUsableCell(std::list<Cells *>::iterator  souceCell, std::list<Cells *>::iterator  &destCellRef, std::list<Cells *>::iterator  cellBak);
@@ -114,6 +116,8 @@ public:
 			std::list<Cells *> _touchMoveCells;
 			std::list<BarrierBlock *> _snowBlock;
 			std::list<Cells *> _hintCells;
+
+			std::vector<Cells *> _recordCellRemoveQueue;
 
 			ClippingNode *_clipNode;
 			bool _isCanRunning{false};

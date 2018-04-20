@@ -415,7 +415,7 @@ void CellsLayer::preCells1()
 															{
 																		*cell = getcell;
 																		moveCell((*cell), 0, 0, colRecord, row);
-																		
+																		preCells1();
 															}
 												}
 
@@ -451,7 +451,7 @@ void CellsLayer::preCells2()
 
 																		*cell = getcell;
 																		moveCell((*cell), 0, 0, colRecord, row);
-																		//preCells2();
+																		preCells2();
 															}
 												}
 
@@ -465,6 +465,19 @@ void CellsLayer::preCells2()
 						
 
 						_isCanRunning = true;
+			}
+
+}
+
+Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col, int row)
+{
+			if (col < 0 || col>6 || row > 4 || row < 0)
+			{
+						return nullptr;
+			}
+			else
+			{
+						
 			}
 
 }
@@ -658,7 +671,7 @@ Cells * CellsLayer::getUsableCell(std::list<Cells*>::iterator &souceCell, int co
 												return nullptr;
 									}
 						}
-						log("%d,%d", col, row);
+						
 						Cells *celltemp1 = nullptr;
 
 						if ((*cell)->getLife() <= 0)
@@ -666,12 +679,28 @@ Cells * CellsLayer::getUsableCell(std::list<Cells*>::iterator &souceCell, int co
 									celltemp1 = getUsableCell(souceCell, col, row+1);
 									if (celltemp1 == nullptr )
 									{
-												celltemp1 = getUsableCell(souceCell, col - 1, row+1);
+												if (abs((col - 1) - (*souceCell)->getColumn()) <= abs((col + 1) - (*souceCell)->getColumn()))
+												{
+															celltemp1 = getUsableCell(souceCell, col - 1, row + 1);
+												}
+												else
+												{
+															celltemp1 = getUsableCell(souceCell, col + 1, row + 1);
+												}
+												
 									}
 									if (celltemp1 == nullptr)
 									{
-												celltemp1 = getUsableCell(souceCell, col + 1, row+1);
+												if (abs((col + 1) - (*souceCell)->getColumn()) <= abs((col - 1) - (*souceCell)->getColumn()))
+												{
+															celltemp1 = getUsableCell(souceCell, col + 1, row + 1);														
+												}
+												else
+												{
+															celltemp1 = getUsableCell(souceCell, col - 1, row + 1);
+												}
 									}
+									
 									return celltemp1;
 						}
 						else
@@ -686,6 +715,7 @@ Cells * CellsLayer::getUsableCell(std::list<Cells*>::iterator &souceCell, int co
 												(*souceCell)->setColumn(cellbak->getColumn());
 												(*souceCell)->setRow(cellbak->getRow());
 												*cell = *souceCell;
+												//Cells *celltake= getUsableCell
 												return cellbak;
 									}
 						}
@@ -1069,7 +1099,7 @@ void CellsLayer::moveCell(Cells * cell, int col1, int row1, int col2, int row2)
 			if (cell != nullptr)
 			{
 						cell->stopAllActions();
-						auto moveto = MoveTo::create(1, Vec2((getSingleTiledSize.x)*(col2 + 0.5), (getSingleTiledSize.y + (tileinterval - 95 * 0.5))*(row2 + 0.5)));
+						auto moveto = MoveTo::create(0.5f, Vec2((getSingleTiledSize.x)*(col2 + 0.5), (getSingleTiledSize.y + (tileinterval - 95 * 0.5))*(row2 + 0.5)));
 						cell->runAction(moveto);
 						cell->setColumn(col2);
 						cell->setRow(row2);
