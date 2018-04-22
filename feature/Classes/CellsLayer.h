@@ -31,6 +31,8 @@ public:
 			//检查normalDiamond
 			//检查遮挡块
 			auto checkBarrier(std::list<Cells *> &cells);
+			void destroyBarrier();
+
 
 			void displayCells();
 			bool isCanDestroyCells();
@@ -42,7 +44,16 @@ public:
 			void preCells1();
 			void preCells2();
 
+			//补格子
+			void preCellsForCol();
+			//查询需要移动的格子
 			Cells *getUsableCol(std::list<Cells *>::iterator  &souceCell, int col, int row);
+			//移动需要移动的格子
+			void removeUsableCells();
+			
+			
+			
+			
 
 			
 			Cells *getUsableCell1(std::list<Cells *>::iterator  &souceCell, int col, int row);
@@ -117,7 +128,7 @@ public:
 			std::list<BarrierBlock *> _snowBlock;
 			std::list<Cells *> _hintCells;
 
-			std::vector<Cells *> _recordCellRemoveQueue;
+			std::vector<Cells *> _CellRemoveQueue;
 
 			ClippingNode *_clipNode;
 			bool _isCanRunning{false};

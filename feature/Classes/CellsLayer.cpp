@@ -43,39 +43,7 @@ auto CellsLayer::checkSnowBlock(std::list<Cells *> &cells)
 															}
 												}
 												
-									}
-
-
-									for (auto  block=_snowBlock.begin();block!=_snowBlock.end();)
-									{
-												if (!(*block))
-												{
-															continue;
-												}
-												auto iter = _displayCell.begin();
-												if ((*block)->getLife() <= 0)
-												{
-															CCASSERT((*block)->getColumn() <= 7, "destroy block get wrong column!");
-															for (int i = 0; i <( *block)->getColumn(); ++i)
-															{
-																		++iter;
-															}
-															auto blockbak = *block;																																								
-															(*iter).remove(*block);
-														    block=_snowBlock.erase(block);
-															(blockbak)->removeAllChildren();
-															(blockbak)->removeFromParentAndCleanup(true);
-															(blockbak) = nullptr;																																																																																									
-												}
-												else
-												{
-															++block;
-												}
-																					
-									}
-									
-								
-									
+									}							
 						}
 						ret = true;
 			} while (0);
@@ -91,6 +59,42 @@ auto  CellsLayer::checkBarrier(std::list<Cells *> &cells)
 						ret = true;
 			} while (0);
 			return ret;
+}
+
+void CellsLayer::destroyBarrier()
+{
+			if (_snowBlock.size())
+			{
+						for (auto block = _snowBlock.begin(); block != _snowBlock.end();)
+						{
+									if (!(*block))
+									{
+												continue;
+									}
+									auto iter = _displayCell.begin();
+									if ((*block)->getLife() <= 0)
+									{
+												CCASSERT((*block)->getColumn() <= 7, "destroy block get wrong column!");
+												for (int i = 0; i < (*block)->getColumn(); ++i)
+												{
+															++iter;
+												}
+												auto blockbak = *block;
+												auto iterblock = find(iter->begin(), iter->end(), *block);
+												*iterblock = nullptr;
+												block = _snowBlock.erase(block);
+												(blockbak)->removeAllChildren();
+												(blockbak)->removeFromParentAndCleanup(true);
+												(blockbak) = nullptr;
+									}
+									else
+									{
+												++block;
+									}
+
+						}
+			}
+			
 }
 
 bool CellsLayer::init()
@@ -283,26 +287,27 @@ void CellsLayer::destroyCells()
 						}
 						
 						
-						preCells1();
+						preCellsForCol();
 						//this->preCells2();
 
 						if (_desCell.size())
 						{
-									for (auto desCell : _desCell)
+									for (auto &desCell  : _desCell)
 									{
 												auto iter = _displayCell.begin();
 												for (int i = 0; i < desCell->getColumn(); ++i)
 												{
 															++iter;
 												}
-												(*iter).remove(desCell);
+												auto iterfind = find(iter->begin(), iter->end(), desCell);
+												*iterfind = nullptr;
 												desCell->removeAllChildren();
 												desCell->removeFromParentAndCleanup(true);
 												desCell = nullptr;
 									}
 									_desCell.clear();
 						}
-
+						destroyBarrier();
 						restoreStalemate();
 			}
 
@@ -469,6 +474,54 @@ void CellsLayer::preCells2()
 
 }
 
+void CellsLayer::preCellsForCol()
+{
+			if (_displayCell.size() > 0)
+			{
+						auto colRecord = 0;
+						auto row = 0;
+						for (auto cells = _displayCell.begin(); cells != _displayCell.end();)
+						{
+									row = 0;
+
+									for (auto cell = cells->begin(); cell != cells->end();)
+									{
+
+												if ((*cell) != nullptr && (*cell)->getLife() <= 0)
+												{
+															auto getcell = getUsableCol(cell, (*cell)->getColumn(), (*cell)->getRow());
+															if (getcell != nullptr)
+															{
+																		if (_CellRemoveQueue.size())
+																		{
+
+																					//for (auto removecell : _CellRemoveQueue)
+																					//{
+																					//			log("revemo:%d,%d", removecell->getColumn(), removecell->getRow());
+																					//}
+																					//log("***************************************");
+																					//移动需要移动的格子
+
+																		}
+																		
+															}
+															_CellRemoveQueue.clear();
+												}
+
+												++row;
+												++cell;
+
+									}
+									++cells;
+									++colRecord;
+						}
+
+
+						_isCanRunning = true;
+			}
+
+}
+
 Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col, int row)
 {
 			if (col < 0 || col>6 || row > 4 || row < 0)
@@ -477,8 +530,71 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 			}
 			else
 			{
-						
+						Cells *dest = nullptr;
+						for (auto cells : _displayCell)
+						{
+									for (auto cell : cells)
+									{
+												if (cell == nullptr)
+												{
+															continue;
+												}
+												if (cell->getRow() == row && cell->getColumn() == col)
+												{
+															dest = cell;
+												}
+									}
+									if (dest != nullptr)
+									{
+												break;
+									}
+						}
+
+						if (dest == nullptr || ((dest->getColor() >= snowBlock)  && (dest->getLife() > 0)))
+						{
+									return nullptr;
+						}
+						else
+						{
+									_CellRemoveQueue.push_back(dest);
+									if (dest->getRow() == 4)
+									{
+												return dest;
+									}
+									dest = getUsableCol(souceCell, col, row + 1);
+									if (dest == nullptr)
+									{
+												if (abs(col - 1 - (*souceCell)->getColumn()) <= abs(col + 1 - (*souceCell)->getColumn()))
+												{
+															dest = getUsableCol(souceCell, col - 1, row + 1);
+												}
+												else
+												{
+															dest = getUsableCol(souceCell, col + 1, row + 1);
+												}
+									}
+
+									if (dest == nullptr)
+									{
+												if (abs(col + 1 - (*souceCell)->getColumn()) <= abs(col - 1 - (*souceCell)->getColumn()))
+												{
+															dest = getUsableCol(souceCell, col + 1, row + 1);
+												}
+												else
+												{
+															dest = getUsableCol(souceCell, col - 1, row + 1);
+												}
+									}
+									return dest;								
+						}
+
+
 			}
+
+}
+
+void CellsLayer::removeUsableCells()
+{
 
 }
 
@@ -831,7 +947,7 @@ bool CellsLayer::isStalemate()
 									{
 												for (auto &cell : cells)
 												{
-															if (static_cast<int>(cell->getColor()) == i)
+															if ( (cell != nullptr) && static_cast<int>(cell->getColor()) == i)
 															{
 																		calcColor.push_back(cell);
 															}
@@ -1048,6 +1164,10 @@ void CellsLayer::showLightCells(CellsColor col)
 			{
 						for (auto cell : cells)
 						{
+									if (cell == nullptr)
+									{
+												continue;
+									}
 									if (cell->getColor() >= snowBlock)
 									{
 												continue;
@@ -1076,6 +1196,10 @@ void CellsLayer::recoverLightCells(CellsColor col)
 			{
 						for (auto cell : cells)
 						{
+									if (cell == nullptr)
+									{
+												continue;
+									}
 									if (cell->getColor() >= snowBlock)
 									{
 												continue;

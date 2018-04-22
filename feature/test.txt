@@ -15,7 +15,11 @@ public:
     int row;
     int col;
     bool canUsable{true};
+    int life{1};
 };
+void printCell(list<list<test *>> &cellss);
+vector<test *> _removeCellsList;
+list<list<test *>> cells;
 
 void init(list<list<test *>> &cellsbak)
 {
@@ -27,8 +31,8 @@ void init(list<list<test *>> &cellsbak)
         for(int j=0;j<7;++j)
         {
             test *t=new (std::nothrow) test;
-            t->row=j;
-            t->col=i;
+            t->row=i;
+            t->col=j;
             listtest.push_back(t);
         }
         cellsbak.push_back(listtest);
@@ -40,22 +44,19 @@ void init(list<list<test *>> &cellsbak)
 
         for(auto cell:*cells)
         {
-            if((cell->row ==3 || cell->row==4 ) && (cell->col==2 || cell->col==3))
+            if((cell->row ==2 || cell->row==1 ) && (cell->col==2 || cell->col==3) || (cell->col==1 && cell->row==3) || (cell->col==4 && cell->row==3) ||(cell->col==2 && cell->row==4)||(cell->col==3 && cell->row==4))
             {
-                cout<<std::setw(3)<<" "<<" "<<" ";
-            }
-            else
-            {
-                cout<<std::setw(3)<<cell->col<<","<<cell->row;
+                cell->canUsable=false;
             }
         }
-        cout<<endl;
+
     }
+    printCell(cellsbak);
 }
 
-test *searchCell(list<list<test *>> &cells,test *sourceCell,int col,int row)
+test *searchCell(test *sourceCell,int col,int row)
 {
-    if(col >7 || col<0 || row>4 || row<0)
+    if(col >6 || col<0 || row>4 || row<0)
     {
         return nullptr;
     }
@@ -79,54 +80,60 @@ test *searchCell(list<list<test *>> &cells,test *sourceCell,int col,int row)
                 break;
             }
         }
-        list<test *>_removeCell;
-        test *getcell=dest;
-        if(row<4)
-        {
-            getcell=searchCell(cells,sourceCell,col,row+1);
-            if(getcell->canUsable)
-            {
-                _removeCell.push_back(dest);
-                
-            }
 
-            if(getcell==nullptr)
-            {
-                if(abs((col-1)-sourceCell->col)<=abs((col+1)-sourceCell->row))
-                {
-                    getcell=searchCell(cells,sourceCell,col-1,row+1);
-                }
-                else
-                {
-                    getcell=searchCell(cells,sourceCell,col+1,row+1);
-                }
-            }
+        if(dest==nullptr || (!dest->canUsable && dest->life>0))
+        {
+            return nullptr;
         }
         else
         {
-            if(!(dest->canUsable))
-            {
-                return nullptr;
-            }
-            else
+            if(dest!=nullptr)
+           _removeCellsList.push_back(dest);
+            if(dest->row==4)
             {
                 return dest;
             }
+            dest=searchCell(sourceCell,col,row+1);
+            if(dest==nullptr)
+            {
+                if(abs((col-1)-sourceCell->col)<=abs(col+1-sourceCell->col))
+                {
+                    dest=searchCell(sourceCell,col-1,row+1);
+                }
+                else
+                {
+                    dest=searchCell(sourceCell,col+1,row+1);
+                }
+            }
 
+            if(dest==nullptr )
+            {
+                if(abs(col+1-sourceCell->col) <= abs(col-1 -sourceCell->col))
+                {
+                     dest=searchCell(sourceCell,col+1,row+1);
+                }
+                else
+                {
+                     dest=searchCell(sourceCell,col-1,row+1);
+                }
+
+            }
+
+           return dest;
         }
-
     }
+
 }
 
 
-void printCell(list<list<test *>> &cells)
+void printCell(list<list<test *>> &cellss)
 {
-    for(auto cells=cellsbak.rbegin();cells!=cellsbak.rend();++cells)
+    for(auto cellsbak=cellss.rbegin();cellsbak!=cellss.rend();++cellsbak)
     {
 
-        for(auto cell:*cells)
+        for(auto cell:*cellsbak)
         {
-            if((cell->row ==3 || cell->row==4 ) && (cell->col==2 || cell->col==3))
+            if(!cell->canUsable)
             {
                 cout<<std::setw(3)<<" "<<" "<<" ";
             }
@@ -139,10 +146,48 @@ void printCell(list<list<test *>> &cells)
     }
 }
 
+test *findTheCell(int col,int row)
+{
+    test *dest=nullptr;
+    auto getce=false;
+    for(auto cellsbak:cells)
+    {
+        for(auto cell:cellsbak)
+        {
+            if(cell->row==row && cell->col==col)
+            {
+                getce=true;
+                cell->life=0;
+                dest=cell;
+                break;
+            }
+        }
+        if(getce==true)
+        {
+            break;
+        }
+    }
+    return dest;
+}
+
+void printRemoveCellsList()
+{
+    for(auto cell:_removeCellsList)
+    {
+        cout<<cell->col<<" "<<cell->row<<endl;
+    }
+}
+
 int main()
 {
-    list<list<test *>> cells;
+
     init(cells);
+
+    test *cell=findTheCell(3,0);
+
+    searchCell(cell,cell->col,cell->row);
+    printRemoveCellsList();
+
 
     return 0;
 }
