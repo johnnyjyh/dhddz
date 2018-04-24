@@ -501,6 +501,7 @@ void CellsLayer::preCellsForCol()
 																					//}
 																					//log("***************************************");
 																					//移动需要移动的格子
+																					removeUsableCells();
 
 																		}
 																		
@@ -595,6 +596,49 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 
 void CellsLayer::removeUsableCells()
 {
+			//置换格子，并获取坐标地址队列
+			for (auto cell : _CellRemoveQueue)
+			{
+
+			}
+			//从后往前，获取坐标地址队列，直到移动到当前队列，则打断停止
+
+}
+
+void CellsLayer::swapCells(Cells * sourceCell, Cells * destCell)
+{
+			//交换block 标量属性		
+			auto lifebak = sourceCell->getLife();
+			auto isSelectedbak = sourceCell->_isSelected;
+			auto colorbak = sourceCell->getColor();
+			auto isCanSelected == sourceCell->_isCanSelected;
+			auto isUsedLogic = sourceCell->_isUsedLogic;
+			auto isTouchBack = sourceCell->_isTouchBack;
+
+			//交换格子坐标？
+			auto row = sourceCell->getRow();
+			auto col = sourceCell->getColumn();
+			sourceCell->setRow(destCell->getRow());
+			sourceCell->setColumn(destCell->getColumn());
+
+			destCell->setRow(row);
+			destCell->setColumn(col);
+			
+
+			//交换格子容器内存储控件
+			auto cellsiter1 = _displayCell.begin();
+			for (int i = 0; i < sourceCell->getColumn(); ++i)
+			{
+						++cellsiter1;
+			}
+
+			auto cellsiter2 = _displayCell.begin();
+			for (int i = 0; i < sourceCell->getColumn(); ++i)
+			{
+						++cellsiter2;
+			}
+
+			
 
 }
 
@@ -879,23 +923,23 @@ int CellsLayer::computeTheOneCell(std::vector<Cells *> &cells, Cells * cellCurre
 			{
 						int num = 1;
 						auto re = cellCurrent;
-						re->isUsedLogic = true;
+						re->_isUsedLogic = true;
 						auto re2 = cells.begin();
 						for (; re2 != cells.end(); ++re2)
 						{
-									if (((*re2)->getRow() == re->getRow() || (*re2)->getColumn() == re->getColumn()) && (*re2)->isUsedLogic == false)
+									if (((*re2)->getRow() == re->getRow() || (*re2)->getColumn() == re->getColumn()) && (*re2)->_isUsedLogic == false)
 									{
 												if (abs((*re2)->getColumn() - re->getColumn()) == 1 || abs((*re2)->getRow() - re->getRow()) == 1)
 												{
-															(*re2)->isUsedLogic = true;
+															(*re2)->_isUsedLogic = true;
 															num += computeTheOneCell(cells, *re2,count);														
 												}
 									}
-									else if (((*re2)->getColumn() != re->getColumn() && (*re2)->getRow() != re->getRow()) && (*re2)->isUsedLogic == false)
+									else if (((*re2)->getColumn() != re->getColumn() && (*re2)->getRow() != re->getRow()) && (*re2)->_isUsedLogic == false)
 									{
 												if (abs((*re2)->getColumn() - re->getColumn()) + abs((*re2)->getRow() - re->getRow()) == 2)
 												{
-															(*re2)->isUsedLogic = true;
+															(*re2)->_isUsedLogic = true;
 															num += computeTheOneCell(cells, *re2, count);															
 											}
 									}
@@ -969,7 +1013,7 @@ bool CellsLayer::isStalemate()
 
 									for (auto &numtemp : calcColor)
 									{
-												numtemp->isUsedLogic = false;
+												numtemp->_isUsedLogic = false;
 									}
 									
 									

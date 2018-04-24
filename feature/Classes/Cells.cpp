@@ -35,6 +35,7 @@ void Cells::bindCellsSprite(Sprite * sp, CellsColor col, bool isSel)
 			setRow(-1);
 			setColumn(-1);
 			addChild(sp,30);
+			_instance->setGlobalZOrder(getColor() + globalZorder::Cells);
 }
 
 void Cells::addPlate()
@@ -88,9 +89,72 @@ int Cells::getLife()
 			return _life;
 }
 
+void Cells::pushCellsSprite(Cells *cell)
+{
+			//int _life{ 1 };
+			//bool _isSelected;
+			//CellsColor _color;
+			//Sprite* _instance;
+			//bool _isCanSelected{ true };
+			//bool _isUsedLogic{ false };
+			//bool _isTouchBack{ false };
+
+			_life = cell->getLife();
+			_isSelected = cell->_isSelected;
+			_color = cell->getColor();
+			if (_life > 0)
+			{
+						_instance = catchColorForNewSprite();
+			}
+			_isCanSelected = cell->_isCanSelected;
+			_isUsedLogic = cell->_isUsedLogic;
+			_isTouchBack = cell->_isTouchBack;
+			addChild(_instance);
+			_instance->setGlobalZOrder(getColor() + globalZorder::Cells);
+
+}
+
+void Cells::pullCellsSprite()
+{
+			this->removeChild(_instance, true);
+}
+
 void Cells::updateCell()
 {
 
 			//更新格子主精灵状态
 			//更新plate状态
+}
+
+Sprite *Cells::catchColorForNewSprite()
+{
+			auto spr = nullptr;
+			switch (this->getColor())
+			{
+			case CellsColor::red:
+						spr =Sprite::createWithSpriteFrameName("operating_red.png");
+						break;
+			case CellsColor::pink:
+						spr = Sprite::createWithSpriteFrameName("operating_pink.png");
+						break;
+			case CellsColor::yellow:
+						spr = Sprite::createWithSpriteFrameName("operating_yellow.png");
+						break;
+			case CellsColor::green:
+						spr = Sprite::createWithSpriteFrameName("operating_ green.png");
+						break;
+			case CellsColor::blue:
+						spr = Sprite::createWithSpriteFrameName("operating_blue.png");
+						break;
+			case CellsColor::blueand:
+						spr = Sprite::createWithSpriteFrameName("operating_blueand.png");
+						break;
+			case CellsColor::purple:
+						spr = Sprite::createWithSpriteFrameName("operating_ purple.png");
+						break;
+			case CellsColor::snowBlock:
+						spr = Sprite::createWithSpriteFrameName("operating_obstacle_004.png");
+						break;
+			}
+			return spr;
 }
