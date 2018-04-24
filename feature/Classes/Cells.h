@@ -19,8 +19,9 @@ public:
 
 			virtual void loseLife();
 			virtual int getLife();
+			virtual void setLife(int life);
 
-			virtual void pushCellsSprite();
+			virtual void pushCellsSprite(Cells *cell);
 			virtual void pullCellsSprite();
 
 			virtual void updateCell();
@@ -28,15 +29,18 @@ public:
 			virtual Sprite *catchColorForNewSprite();
 
 			//block 标记量   用于交换block 时记录格子状态 
+
+
 			int _life{1};
 			bool _isSelected;
 			CellsColor _color;
 			Sprite* _instance;
-			bool _isCanSelected{true};
+			bool _isCanSelected{ true };
 			bool _isUsedLogic{ false };
 			bool _isTouchBack{ false };
 			CC_SYNTHESIZE(int, _row, Row);
 			CC_SYNTHESIZE(int, _column, Column);
+			
 
 			//cells 标记量   
 			Sprite *_plate[4]{ {nullptr},{nullptr},{nullptr},{nullptr} };

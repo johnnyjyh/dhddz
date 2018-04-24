@@ -34,6 +34,7 @@ void BarrierBlock::bindBarrierSprite(Sprite *sp, CellsColor color, int life)
 			setRow(-1);
 			setColumn(-1);
 			addChild(_instance, 35);
+			_instance->setScale(0.5f);
 }
 
 //Sprite * BarrierBlock::getSprite()

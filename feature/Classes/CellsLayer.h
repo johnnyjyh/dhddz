@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "BarrierBlock.h"
 
+
 class CellsLayer:
 			public Layer
 {
@@ -128,9 +129,11 @@ public:
 			std::list<BarrierBlock *> _snowBlock;
 			std::list<Cells *> _hintCells;
 
-			std::vector<Cells *> _CellRemoveQueue;
+			//格子移动处理
+			std::vector<Cells *> _cellRemoveQueue;
+			std::vector<Vec2> _cellVec2RemoveQueue;
 
-			ClippingNode *_clipNode;
+			ClippingNode *_clipNode{nullptr};
 			bool _isCanRunning{false};
 			
 			int _cellScore{ 0 };

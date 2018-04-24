@@ -75,17 +75,17 @@ void CellsLayer::destroyBarrier()
 									if ((*block)->getLife() <= 0)
 									{
 												CCASSERT((*block)->getColumn() <= 7, "destroy block get wrong column!");
-												for (int i = 0; i < (*block)->getColumn(); ++i)
+												/*for (int i = 0; i < (*block)->getColumn(); ++i)
 												{
 															++iter;
 												}
 												auto blockbak = *block;
-												auto iterblock = find(iter->begin(), iter->end(), *block);
-												*iterblock = nullptr;
+												auto iterblock = std::find(iter->begin(), iter->end(), *block);
+												*iterblock = nullptr;*/
 												block = _snowBlock.erase(block);
-												(blockbak)->removeAllChildren();
+												/*(blockbak)->removeAllChildren();
 												(blockbak)->removeFromParentAndCleanup(true);
-												(blockbak) = nullptr;
+												(blockbak) = nullptr;*/
 									}
 									else
 									{
@@ -236,7 +236,7 @@ void CellsLayer::displayCells()
 									
 									
 #ifdef _Test_
-									cell->getSprite()->setScale(0.5);								
+									//cell->getSprite()->setScale(0.5);								
 #endif //_Test_
 									//cell->getSprite()->setAnchorPoint(Vec2::ZERO);
 									cell->setPosition(Vec2((getSingleTiledSize.x)*(cell->getColumn()+0.5), (getSingleTiledSize.y + (tileinterval - 95 *0.5))*(cell->getRow()+0.5)));
@@ -290,7 +290,7 @@ void CellsLayer::destroyCells()
 						preCellsForCol();
 						//this->preCells2();
 
-						if (_desCell.size())
+						/*if (_desCell.size())
 						{
 									for (auto &desCell  : _desCell)
 									{
@@ -306,7 +306,7 @@ void CellsLayer::destroyCells()
 												desCell = nullptr;
 									}
 									_desCell.clear();
-						}
+						}*/
 						destroyBarrier();
 						restoreStalemate();
 			}
@@ -492,10 +492,10 @@ void CellsLayer::preCellsForCol()
 															auto getcell = getUsableCol(cell, (*cell)->getColumn(), (*cell)->getRow());
 															if (getcell != nullptr)
 															{
-																		if (_CellRemoveQueue.size())
+																		if (_cellRemoveQueue.size())
 																		{
 
-																					//for (auto removecell : _CellRemoveQueue)
+																					//for (auto removecell : _cellRemoveQueue)
 																					//{
 																					//			log("revemo:%d,%d", removecell->getColumn(), removecell->getRow());
 																					//}
@@ -506,7 +506,7 @@ void CellsLayer::preCellsForCol()
 																		}
 																		
 															}
-															_CellRemoveQueue.clear();
+															_cellRemoveQueue.clear();
 												}
 
 												++row;
@@ -557,7 +557,7 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 						}
 						else
 						{
-									_CellRemoveQueue.push_back(dest);
+									_cellRemoveQueue.push_back(dest);
 									if (dest->getRow() == 4)
 									{
 												return dest;
@@ -597,49 +597,88 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 void CellsLayer::removeUsableCells()
 {
 			//置换格子，并获取坐标地址队列
-			for (auto cell : _CellRemoveQueue)
-			{
 
-			}
-			//从后往前，获取坐标地址队列，直到移动到当前队列，则打断停止
+			//for (auto cell : _cellRemoveQueue)
+			//{
+			//			if (cell->getLife() > 0)
+			//			{
+			//						Cells *cellmoveto = nullptr;
+			//						for (auto cellvec : _cellRemoveQueue)
+			//						{
+			//									if (cellvec == cell)
+			//									{
+			//												if (_cellVec2RemoveQueue.size())
+			//												{
+			//															Vector<FiniteTimeAction *> moves;
+			//															for (auto iter = _cellVec2RemoveQueue.rbegin(); iter != _cellVec2RemoveQueue.rend(); ++iter)
+			//															{
+			//																		auto movea = static_cast<FiniteTimeAction *>(MoveTo::create(1.0f, (*iter)));
+			//																		moves.pushBack(movea);
+			//															}
 
+			//															auto seq = Sequence::create(moves);
+			//															cellvec->runAction(seq);
+			//												}
+			//												break;
+			//									}
+			//									else
+			//									{
+			//												
+			//												if (cellvec->getLife() > 0)
+			//												{
+			//															continue;
+			//												}
+			//												else
+			//												{
+			//															_cellVec2RemoveQueue.push_back(cellvec->getPosition());
+			//															if (cellmoveto == nullptr)
+			//															{
+			//																		cellmoveto = cellvec;
+			//																		swapCells(cell, cellmoveto);																																					
+			//															}
+			//															
+			//												}
+			//									}
+			//						}
+			//						_cellVec2RemoveQueue.clear();
+			//						//break;
+			//			}
+			//			
+			//}
 }
 
 void CellsLayer::swapCells(Cells * sourceCell, Cells * destCell)
 {
 			//交换block 标量属性		
-			auto lifebak = sourceCell->getLife();
-			auto isSelectedbak = sourceCell->_isSelected;
-			auto colorbak = sourceCell->getColor();
-			auto isCanSelected == sourceCell->_isCanSelected;
-			auto isUsedLogic = sourceCell->_isUsedLogic;
-			auto isTouchBack = sourceCell->_isTouchBack;
+			auto lifebak = destCell->getLife();
+			auto isSelectedbak = destCell->_isSelected;
+			auto colorbak = destCell->getColor();
+			auto isCanSelected = destCell->isCanSelected();
+			auto isUsedLogic = destCell->_isUsedLogic;
+			auto isTouchBack = destCell->_isTouchBack;
+			destCell->pullCellsSprite();
+			destCell->pushCellsSprite(sourceCell);
 
-			//交换格子坐标？
+			sourceCell->setLife(lifebak);
+			sourceCell->_isSelected = isSelectedbak;
+			sourceCell->_color = colorbak;
+			sourceCell->_isCanSelected= isCanSelected;
+			sourceCell->_isUsedLogic = isUsedLogic;
+			sourceCell->_isTouchBack = isTouchBack;
+			sourceCell->pullCellsSprite();
+
+			
+			
+
+
+			//交换格子坐标
 			auto row = sourceCell->getRow();
 			auto col = sourceCell->getColumn();
 			sourceCell->setRow(destCell->getRow());
 			sourceCell->setColumn(destCell->getColumn());
 
 			destCell->setRow(row);
-			destCell->setColumn(col);
-			
-
-			//交换格子容器内存储控件
-			auto cellsiter1 = _displayCell.begin();
-			for (int i = 0; i < sourceCell->getColumn(); ++i)
-			{
-						++cellsiter1;
-			}
-
-			auto cellsiter2 = _displayCell.begin();
-			for (int i = 0; i < sourceCell->getColumn(); ++i)
-			{
-						++cellsiter2;
-			}
-
-			
-
+			destCell->setColumn(col);			
 }
 
 Cells * CellsLayer::getUsableCell1(std::list<Cells*>::iterator & souceCell, int col, int row)

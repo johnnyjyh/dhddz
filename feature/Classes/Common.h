@@ -51,7 +51,7 @@ enum CellsColor : int
 
 enum globalZorder :int 
 {
-			Cells=30,
+			CellsZorder=30,
 
 };
 

@@ -35,7 +35,8 @@ void Cells::bindCellsSprite(Sprite * sp, CellsColor col, bool isSel)
 			setRow(-1);
 			setColumn(-1);
 			addChild(sp,30);
-			_instance->setGlobalZOrder(getColor() + globalZorder::Cells);
+			_instance->setGlobalZOrder(getColor() + globalZorder::CellsZorder);
+			_instance->setScale(0.5f);
 }
 
 void Cells::addPlate()
@@ -89,6 +90,11 @@ int Cells::getLife()
 			return _life;
 }
 
+void Cells::setLife(int life)
+{
+			_life = life;
+}
+
 void Cells::pushCellsSprite(Cells *cell)
 {
 			//int _life{ 1 };
@@ -110,7 +116,9 @@ void Cells::pushCellsSprite(Cells *cell)
 			_isUsedLogic = cell->_isUsedLogic;
 			_isTouchBack = cell->_isTouchBack;
 			addChild(_instance);
-			_instance->setGlobalZOrder(getColor() + globalZorder::Cells);
+			_instance->setGlobalZOrder(getColor() + globalZorder::CellsZorder);
+			_instance->setScale(0.5f);
+			//_instance->setPosition(getPosition());
 
 }
 
@@ -128,7 +136,7 @@ void Cells::updateCell()
 
 Sprite *Cells::catchColorForNewSprite()
 {
-			auto spr = nullptr;
+			Sprite *spr = nullptr;
 			switch (this->getColor())
 			{
 			case CellsColor::red:
