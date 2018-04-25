@@ -82,6 +82,7 @@ void CellsLayer::destroyBarrier()
 												auto blockbak = *block;
 												auto iterblock = std::find(iter->begin(), iter->end(), *block);
 												*iterblock = nullptr;*/
+												(*block)->setVisible(false);
 												block = _snowBlock.erase(block);
 												/*(blockbak)->removeAllChildren();
 												(blockbak)->removeFromParentAndCleanup(true);
@@ -285,8 +286,8 @@ void CellsLayer::destroyCells()
 									desCells->loseLife();
 									_desCell.push_back(desCells);
 						}
-						
-						
+						destroyBarrier();
+						//preCells1();
 						preCellsForCol();
 						//this->preCells2();
 
@@ -307,7 +308,7 @@ void CellsLayer::destroyCells()
 									}
 									_desCell.clear();
 						}*/
-						destroyBarrier();
+						
 						restoreStalemate();
 			}
 
@@ -597,54 +598,76 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 void CellsLayer::removeUsableCells()
 {
 			//置换格子，并获取坐标地址队列
+			int recordTime = 0;
+			for (auto cell : _cellRemoveQueue)
+			{
+						if (cell->getLife() > 0)
+						{
+									Cells *cellmoveto = nullptr;
+									for (auto cellvec : _cellRemoveQueue)
+									{
+												if (cellvec == cell && cellvec->getLife()>0)
+												{
+															if (_cellVec2RemoveQueue.size())
+															{
 
-			//for (auto cell : _cellRemoveQueue)
-			//{
-			//			if (cell->getLife() > 0)
-			//			{
-			//						Cells *cellmoveto = nullptr;
-			//						for (auto cellvec : _cellRemoveQueue)
-			//						{
-			//									if (cellvec == cell)
-			//									{
-			//												if (_cellVec2RemoveQueue.size())
-			//												{
-			//															Vector<FiniteTimeAction *> moves;
-			//															for (auto iter = _cellVec2RemoveQueue.rbegin(); iter != _cellVec2RemoveQueue.rend(); ++iter)
-			//															{
-			//																		auto movea = static_cast<FiniteTimeAction *>(MoveTo::create(1.0f, (*iter)));
-			//																		moves.pushBack(movea);
-			//															}
+																		Vector<FiniteTimeAction *> moves;
 
-			//															auto seq = Sequence::create(moves);
-			//															cellvec->runAction(seq);
-			//												}
-			//												break;
-			//									}
-			//									else
-			//									{
-			//												
-			//												if (cellvec->getLife() > 0)
-			//												{
-			//															continue;
-			//												}
-			//												else
-			//												{
-			//															_cellVec2RemoveQueue.push_back(cellvec->getPosition());
-			//															if (cellmoveto == nullptr)
-			//															{
-			//																		cellmoveto = cellvec;
-			//																		swapCells(cell, cellmoveto);																																					
-			//															}
-			//															
-			//												}
-			//									}
-			//						}
-			//						_cellVec2RemoveQueue.clear();
-			//						//break;
-			//			}
-			//			
-			//}
+																		for (auto iter = _cellVec2RemoveQueue.rbegin(); iter != _cellVec2RemoveQueue.rend(); ++iter)
+																		{
+																					log("%f,%f", (*iter).x, (*iter).y);
+																					auto movea = static_cast<FiniteTimeAction *>(MoveTo::create(1.0f, cellvec->convertToNodeSpace(*iter)));
+																					moves.pushBack(movea);
+																		}
+
+																		auto seq = Sequence::create(moves);		
+																		auto func = CallFuncN::create([&,cellmoveto,cellvec](Node *node) {
+																					auto cellsou = static_cast<Cells *>(node->getParent());
+																					cellmoveto->pullCellsSprite();
+																					cellmoveto->pushCellsSprite(cellsou);
+																					cellsou->pullCellsSprite();
+																					
+
+																					log("sour:%d,%d  dest:%d,%d", cellsou->getColumn(), cellsou->getRow(), cellmoveto->getColumn(), cellmoveto->getRow());
+																		});
+																		auto seqall = Sequence::create(seq, func, nullptr);
+																		cellvec->getSprite()->runAction(seqall);
+																		auto lifemode = cellmoveto->getLife();
+																		cellmoveto->setLife(cellvec->getLife());
+																		cellvec->setLife(lifemode);
+																		
+															}
+															break;
+												}
+												else
+												{
+															
+															if (cellvec->getLife() > 0)
+															{
+																		
+																		continue;
+															}
+															else
+															{
+																		_cellVec2RemoveQueue.push_back(cellvec->getPosition());															
+																		if (cellmoveto == nullptr)
+																		{
+																					cellmoveto = cellvec;
+																		}
+																		
+															}
+												}
+									}
+									_cellVec2RemoveQueue.clear();
+									
+						}
+						
+			}
+			
+
+			
+
+
 }
 
 void CellsLayer::swapCells(Cells * sourceCell, Cells * destCell)

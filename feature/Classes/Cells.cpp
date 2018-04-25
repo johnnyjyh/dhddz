@@ -105,19 +105,17 @@ void Cells::pushCellsSprite(Cells *cell)
 			//bool _isUsedLogic{ false };
 			//bool _isTouchBack{ false };
 
-			_life = cell->getLife();
+		
 			_isSelected = cell->_isSelected;
 			_color = cell->getColor();
 			if (_life > 0)
 			{
 						_instance = catchColorForNewSprite();
-			}
-			_isCanSelected = cell->_isCanSelected;
-			_isUsedLogic = cell->_isUsedLogic;
-			_isTouchBack = cell->_isTouchBack;
-			addChild(_instance);
-			_instance->setGlobalZOrder(getColor() + globalZorder::CellsZorder);
-			_instance->setScale(0.5f);
+						
+						addChild(_instance);
+						_instance->setGlobalZOrder(getColor() + globalZorder::CellsZorder);
+						_instance->setScale(0.5f);
+			}		
 			//_instance->setPosition(getPosition());
 
 }
@@ -125,6 +123,7 @@ void Cells::pushCellsSprite(Cells *cell)
 void Cells::pullCellsSprite()
 {
 			this->removeChild(_instance, true);
+			
 }
 
 void Cells::updateCell()
