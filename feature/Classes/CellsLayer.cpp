@@ -82,8 +82,9 @@ void CellsLayer::destroyBarrier()
 												auto blockbak = *block;
 												auto iterblock = std::find(iter->begin(), iter->end(), *block);
 												*iterblock = nullptr;*/
-												(*block)->setVisible(false);
+												(*block)->getSprite()->setVisible(false);
 												block = _snowBlock.erase(block);
+												(*block)->_isCanSelected = false;
 												/*(blockbak)->removeAllChildren();
 												(blockbak)->removeFromParentAndCleanup(true);
 												(blockbak) = nullptr;*/
@@ -253,7 +254,7 @@ void CellsLayer::displayCells()
 						
 			}
 			restoreStalemate();
-			_isCanRunning = true;			
+			_isCanRunning = true;
 }
 
 bool CellsLayer::isCanDestroyCells()
@@ -282,7 +283,8 @@ void CellsLayer::destroyCells()
 						for (auto desCells : _touchMoveCells)
 						{
 
-									desCells->setVisible(false);
+									desCells->getSprite()->setVisible(false);
+									desCells->_isCanSelected = false;
 									desCells->loseLife();
 									_desCell.push_back(desCells);
 						}
@@ -308,7 +310,7 @@ void CellsLayer::destroyCells()
 									}
 									_desCell.clear();
 						}*/
-						
+						_isCanRunning = true;
 						restoreStalemate();
 			}
 
@@ -621,20 +623,20 @@ void CellsLayer::removeUsableCells()
 																		}
 
 																		auto seq = Sequence::create(moves);		
-																		auto func = CallFuncN::create([&,cellmoveto,cellvec](Node *node) {
+																		auto func = CallFuncN::create([&,cellmoveto,cellvec](Node *node) 
+																		{
 																					auto cellsou = static_cast<Cells *>(node->getParent());
-																					cellmoveto->pullCellsSprite();
-																					cellmoveto->pushCellsSprite(cellsou);
-																					cellsou->pullCellsSprite();
+																																								
+																					cellmoveto->pushCellsSprite(cellsou);																																									
 																					
-
-																					log("sour:%d,%d  dest:%d,%d", cellsou->getColumn(), cellsou->getRow(), cellmoveto->getColumn(), cellmoveto->getRow());
+																																										
 																		});
 																		auto seqall = Sequence::create(seq, func, nullptr);
-																		cellvec->getSprite()->runAction(seqall);
+																		
 																		auto lifemode = cellmoveto->getLife();
 																		cellmoveto->setLife(cellvec->getLife());
 																		cellvec->setLife(lifemode);
+																		cellvec->getSprite()->runAction(seqall);
 																		
 															}
 															break;
@@ -1280,6 +1282,10 @@ void CellsLayer::showLightCells(CellsColor col)
 									}
 									if (cell->getColor()!=col )
 									{
+												if (!(cell->isCanSelected()))
+												{
+															continue;
+												}
 												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("grey_effect"));														
 									}
@@ -1288,6 +1294,10 @@ void CellsLayer::showLightCells(CellsColor col)
 												if (!cell->isSelected())
 												{														
 															_touchCells.push_back(cell);
+												}
+												if (!(cell->isCanSelected()))
+												{
+															continue;
 												}
 												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "dis_normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("light_effect"));
@@ -1312,11 +1322,19 @@ void CellsLayer::recoverLightCells(CellsColor col)
 									}
 									if (cell->getColor() != col)
 									{
+												if (!(cell->isCanSelected()))
+												{
+															continue;
+												}
 												//GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("normal_effect"));
 									}
 									else
 									{
+												if (!(cell->isCanSelected()))
+												{
+															continue;
+												}
 												cell->_isSelected = false;
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("dis_normal_effect"));
 									}
@@ -1384,9 +1402,13 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 									for (auto cells : _displayCell)
 									{
 												for (auto cell : cells)
-												{																													
-															if (cell &&( cell->getBoundingBox().containsPoint(touch->getLocation()) && cell->getColor()<snowBlock))
+												{							
+															
+															if (cell->getLife()>0 &&( cell->getBoundingBox().containsPoint(touch->getLocation()) && cell->getColor()<snowBlock))
 															{
+																		//
+																		log("touch  cell life :%d  col:%d,row:%d", cell->getLife(),cell->getColumn(),cell->getRow());
+																		//
 																		cell->_isSelected = true;
 																		showLightCells(cell->getColor());
 																		_touchCells.push_back(cell);
