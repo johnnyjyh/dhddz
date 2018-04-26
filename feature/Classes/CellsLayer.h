@@ -50,7 +50,7 @@ public:
 			//查询需要移动的格子
 			Cells *getUsableCol(std::list<Cells *>::iterator  &souceCell, int col, int row);
 			//移动需要移动的格子
-			void removeUsableCells();
+			//void removeUsableCells();
 			//交换格子控件
 			void swapCells(Cells *sourceCell,Cells *destCell);
 					

@@ -75,19 +75,17 @@ void CellsLayer::destroyBarrier()
 									if ((*block)->getLife() <= 0)
 									{
 												CCASSERT((*block)->getColumn() <= 7, "destroy block get wrong column!");
-												/*for (int i = 0; i < (*block)->getColumn(); ++i)
+												for (int i = 0; i < (*block)->getColumn(); ++i)
 												{
 															++iter;
 												}
 												auto blockbak = *block;
 												auto iterblock = std::find(iter->begin(), iter->end(), *block);
-												*iterblock = nullptr;*/
-												(*block)->getSprite()->setVisible(false);
+												*iterblock = nullptr;
 												block = _snowBlock.erase(block);
-												(*block)->_isCanSelected = false;
-												/*(blockbak)->removeAllChildren();
+												(blockbak)->removeAllChildren();
 												(blockbak)->removeFromParentAndCleanup(true);
-												(blockbak) = nullptr;*/
+												(blockbak) = nullptr;
 									}
 									else
 									{
@@ -254,7 +252,7 @@ void CellsLayer::displayCells()
 						
 			}
 			restoreStalemate();
-			_isCanRunning = true;
+			_isCanRunning = true;			
 }
 
 bool CellsLayer::isCanDestroyCells()
@@ -283,17 +281,16 @@ void CellsLayer::destroyCells()
 						for (auto desCells : _touchMoveCells)
 						{
 
-									desCells->getSprite()->setVisible(false);
-									desCells->_isCanSelected = false;
+									desCells->setVisible(false);
 									desCells->loseLife();
 									_desCell.push_back(desCells);
 						}
-						destroyBarrier();
-						//preCells1();
+						
+						
 						preCellsForCol();
 						//this->preCells2();
 
-						/*if (_desCell.size())
+						if (_desCell.size())
 						{
 									for (auto &desCell  : _desCell)
 									{
@@ -309,8 +306,8 @@ void CellsLayer::destroyCells()
 												desCell = nullptr;
 									}
 									_desCell.clear();
-						}*/
-						_isCanRunning = true;
+						}
+						destroyBarrier();
 						restoreStalemate();
 			}
 
@@ -504,7 +501,7 @@ void CellsLayer::preCellsForCol()
 																					//}
 																					//log("***************************************");
 																					//移动需要移动的格子
-																					removeUsableCells();
+																					//removeUsableCells();
 
 																		}
 																		
@@ -597,80 +594,55 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 
 }
 
-void CellsLayer::removeUsableCells()
-{
-			//置换格子，并获取坐标地址队列
-			int recordTime = 0;
-			for (auto cell : _cellRemoveQueue)
-			{
-						if (cell->getLife() > 0)
-						{
-									Cells *cellmoveto = nullptr;
-									for (auto cellvec : _cellRemoveQueue)
-									{
-												if (cellvec == cell && cellvec->getLife()>0)
-												{
-															if (_cellVec2RemoveQueue.size())
-															{
-
-																		Vector<FiniteTimeAction *> moves;
-
-																		for (auto iter = _cellVec2RemoveQueue.rbegin(); iter != _cellVec2RemoveQueue.rend(); ++iter)
-																		{
-																					log("%f,%f", (*iter).x, (*iter).y);
-																					auto movea = static_cast<FiniteTimeAction *>(MoveTo::create(1.0f, cellvec->convertToNodeSpace(*iter)));
-																					moves.pushBack(movea);
-																		}
-
-																		auto seq = Sequence::create(moves);		
-																		auto func = CallFuncN::create([&,cellmoveto,cellvec](Node *node) 
-																		{
-																					auto cellsou = static_cast<Cells *>(node->getParent());
-																																								
-																					cellmoveto->pushCellsSprite(cellsou);																																									
-																					
-																																										
-																		});
-																		auto seqall = Sequence::create(seq, func, nullptr);
-																		
-																		auto lifemode = cellmoveto->getLife();
-																		cellmoveto->setLife(cellvec->getLife());
-																		cellvec->setLife(lifemode);
-																		cellvec->getSprite()->runAction(seqall);
-																		
-															}
-															break;
-												}
-												else
-												{
-															
-															if (cellvec->getLife() > 0)
-															{
-																		
-																		continue;
-															}
-															else
-															{
-																		_cellVec2RemoveQueue.push_back(cellvec->getPosition());															
-																		if (cellmoveto == nullptr)
-																		{
-																					cellmoveto = cellvec;
-																		}
-																		
-															}
-												}
-									}
-									_cellVec2RemoveQueue.clear();
-									
-						}
-						
-			}
-			
-
-			
-
-
-}
+//void CellsLayer::removeUsableCells()
+//{
+//			置换格子，并获取坐标地址队列
+//
+//			for (auto cell : _cellRemoveQueue)
+//			{
+//						if (cell->getLife() > 0)
+//						{
+//									Cells *cellmoveto = nullptr;
+//									for (auto cellvec : _cellRemoveQueue)
+//									{
+//												if (cellvec == cell)
+//												{
+//															if (_cellVec2RemoveQueue.size())
+//															{
+//																		Vector<MoveTo *> moves;
+//																		for (auto iter = _cellVec2RemoveQueue.rbegin(); iter != _cellVec2RemoveQueue.rend(); ++iter)
+//																		{
+//																					auto movea = static_cast<FiniteTimeAction *>(MoveTo::create(0.2f, (*iter)));
+//																					moves.push_back(movea);
+//																		}
+//
+//																		auto seq = Sequence::create(moves);
+//																		cellvec->runAction(seq);
+//															}
+//															break;
+//												}
+//												else
+//												{
+//															
+//															if (cellvec->getLife() > 0)
+//															{
+//																		continue;
+//															}
+//															else
+//															{
+//																		_cellVec2RemoveQueue.push_back(cellvec->getPosition());
+//																		if (cellmoveto == nullptr)
+//																		{
+//																					cellmoveto = cellvec;
+//																					swapCells(cell, cellmoveto);																																					
+//																		}
+//																		
+//															}
+//												}
+//									}
+//						}
+//			}
+//}
 
 void CellsLayer::swapCells(Cells * sourceCell, Cells * destCell)
 {
@@ -1282,10 +1254,6 @@ void CellsLayer::showLightCells(CellsColor col)
 									}
 									if (cell->getColor()!=col )
 									{
-												if (!(cell->isCanSelected()))
-												{
-															continue;
-												}
 												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("grey_effect"));														
 									}
@@ -1294,10 +1262,6 @@ void CellsLayer::showLightCells(CellsColor col)
 												if (!cell->isSelected())
 												{														
 															_touchCells.push_back(cell);
-												}
-												if (!(cell->isCanSelected()))
-												{
-															continue;
 												}
 												GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "dis_normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("light_effect"));
@@ -1322,19 +1286,11 @@ void CellsLayer::recoverLightCells(CellsColor col)
 									}
 									if (cell->getColor() != col)
 									{
-												if (!(cell->isCanSelected()))
-												{
-															continue;
-												}
 												//GLProgramCache::getInstance()->addGLProgram(cell->getSprite()->getGLProgram(), "normal_effect");
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("normal_effect"));
 									}
 									else
 									{
-												if (!(cell->isCanSelected()))
-												{
-															continue;
-												}
 												cell->_isSelected = false;
 												cell->getSprite()->setGLProgram(GLProgramCache::getInstance()->getGLProgram("dis_normal_effect"));
 									}
@@ -1402,13 +1358,9 @@ bool CellsLayer::onTouchBegan(Touch * touch, Event * unused_event)
 									for (auto cells : _displayCell)
 									{
 												for (auto cell : cells)
-												{							
-															
-															if (cell->getLife()>0 &&( cell->getBoundingBox().containsPoint(touch->getLocation()) && cell->getColor()<snowBlock))
+												{																													
+															if (cell &&( cell->getBoundingBox().containsPoint(touch->getLocation()) && cell->getColor()<snowBlock))
 															{
-																		//
-																		log("touch  cell life :%d  col:%d,row:%d", cell->getLife(),cell->getColumn(),cell->getRow());
-																		//
 																		cell->_isSelected = true;
 																		showLightCells(cell->getColor());
 																		_touchCells.push_back(cell);
