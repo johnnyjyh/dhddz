@@ -1,6 +1,5 @@
 #ifndef __BarrierBlock_H__
 #define __BarrierBlock_H__
-#include "common.h"
 #include "Cells.h"
 
 class BarrierBlock :public Cells

@@ -28,9 +28,10 @@ public:
 
 			virtual Sprite *catchColorForNewSprite();
 
+			virtual void pushMoveVec(std::vector<Vec2> & moveVec);
 			//block 标记量   用于交换block 时记录格子状态 
 
-
+	
 			int _life{1};
 			bool _isSelected;
 			CellsColor _color;
@@ -38,6 +39,7 @@ public:
 			bool _isCanSelected{ true };
 			bool _isUsedLogic{ false };
 			bool _isTouchBack{ false };
+			bool _isMoving{ false };
 			CC_SYNTHESIZE(int, _row, Row);
 			CC_SYNTHESIZE(int, _column, Column);
 			
@@ -47,7 +49,7 @@ public:
 			bool _usablePlate[4]{ {false},{false},{false},{false }};// 规定plate 0上，1右，2下，3左
 			int _usablePlateHealth[4]{ {0},{0},{0},{0} };
 			Vec2 _usablePlatePos[4];
-
+			Vector<FiniteTimeAction *> _mMoveVec;
 
 			
 
