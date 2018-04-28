@@ -105,11 +105,11 @@ void Cells::pushCellsSprite(Cells *cell)
 			//bool _isUsedLogic{ false };
 			//bool _isTouchBack{ false };
 
-			_isSelected = cell->_isSelected;
-			_color = cell->getColor();
-			_isCanSelected = cell->_isCanSelected;
-			_isUsedLogic = cell->_isUsedLogic;
-			_isTouchBack = cell->_isTouchBack;
+			//_isSelected = cell->_isSelected;
+			//_color = cell->getColor();
+			//_isCanSelected = cell->_isCanSelected;
+			//_isUsedLogic = cell->_isUsedLogic;
+			//_isTouchBack = cell->_isTouchBack;
 
 			if (_life > 0)
 			{
@@ -126,11 +126,15 @@ void Cells::pushCellsSprite(Cells *cell)
 
 void Cells::pullCellsSprite()
 {		
-			_isCanSelected = false;
+			//_isCanSelected = false;
+			if (_instance == nullptr)
+			{
+						return;
+			}
 			_instance->removeAllChildrenWithCleanup(true);
 			this->removeChild(_instance, true);
 			_instance = nullptr;
-			setLife(0);
+			//setLife(0);
 			
 }
 
@@ -181,7 +185,16 @@ void Cells::pushMoveVec(std::vector<Vec2> & moveVec)
 						_mMoveVec.clear();
 			}
 			for (auto vec : moveVec)
-			{					
+			{
+						int temp[2];
+						int *temps = vec2ToCoordinate(vec);
+						temp[0] = temps[0];
+						temp[1] = temps[1];
+									
+						log("1:cells move pos:%d %d to   %d,%d",getColumn(),getRow(),temp[0],temp[1]);
+						int *temp1 = vec2ToCoordinate(getPosition());
+						log("2:cells move pos:%d %d to   %d,%d", temp1[0], temp1[1], temp[0], temp[1]);
 						_mMoveVec.pushBack(static_cast<FiniteTimeAction *>(MoveTo::create(1, convertToNodeSpace(vec))));
 			}
+			log("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
 }

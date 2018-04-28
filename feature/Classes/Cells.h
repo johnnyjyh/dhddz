@@ -51,7 +51,15 @@ public:
 			Vec2 _usablePlatePos[4];
 			Vector<FiniteTimeAction *> _mMoveVec;
 
-			
+			//test
+			int  *vec2ToCoordinate(Vec2 vec)
+			{
+						int tempa[2];
+						tempa[0] = vec.x / getSingleTiledSize.x;
+						tempa[1] = vec.y / (getSingleTiledSize.y + (tileinterval - 95 * 0.5)) ;
+						return tempa;
+			}
+			//test;
 
 
 };
