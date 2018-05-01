@@ -31,6 +31,17 @@ public:
 			virtual void pushMoveVec(std::vector<Vec2> & moveVec);
 			//block 标记量   用于交换block 时记录格子状态 
 
+
+			//
+			double transformArr[2];
+			inline double *vec2ToCoordinate(Vec2 vec)
+			{
+						transformArr[0] = vec.x / getSingleTiledSize.x - 0.5;
+						transformArr[1] = vec.y / (getSingleTiledSize.y + (tileinterval - 95 * 0.5)) - 0.5;
+						return transformArr;
+			}
+			//
+
 	
 			int _life{1};
 			bool _isSelected;
@@ -49,7 +60,8 @@ public:
 			bool _usablePlate[4]{ {false},{false},{false},{false }};// 规定plate 0上，1右，2下，3左
 			int _usablePlateHealth[4]{ {0},{0},{0},{0} };
 			Vec2 _usablePlatePos[4];
-			Vector<FiniteTimeAction *> _mMoveVec;
+			std::vector<Vec2> _moveVec;
+			Vector<FiniteTimeAction *> _moveActionVec;
 
 			
 

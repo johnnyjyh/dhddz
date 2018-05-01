@@ -533,11 +533,20 @@ void CellsLayer::preCellsForCol()
 									if (cell->_isMoving)
 									{
 
-												if (cell->_mMoveVec.size())
+												if (cell->_moveVec.size())
 												{
-															auto seq = Sequence::create(cell->_mMoveVec);
+															if (cell->getSprite() == nullptr)
+															{
+																		continue;
+															}
+															for (auto moveto = cell->_moveVec.begin(); moveto != cell->_moveVec.end(); ++moveto)
+															{
+																		cell->_moveActionVec.pushBack(MoveTo::create(1.0f,cell->convertToNodeSpace(*moveto)));
+															}
+															auto seq = Sequence::create(cell->_moveActionVec);
 															cell->getSprite()->runAction(seq);
-															cell->_mMoveVec.clear();
+															cell->_moveVec.clear();
+															cell->_moveActionVec.clear();
 															cell->_isMoving = false;
 												}
 									}
@@ -656,6 +665,7 @@ void CellsLayer::removeUsableCells()
 																		cellvec->_isMoving = true;
 																		cellvec->getSprite()->runAction(seq2);
 																		swapCells(cellvec, cellmoveto);*/
+																		
 																		cellvec->_isMoving = true;
 																		cellvec->pushMoveVec(_cellVec2RemoveQueue);
 																		swapCells(cellvec, cellmoveto);
@@ -673,9 +683,11 @@ void CellsLayer::removeUsableCells()
 															}
 															else
 															{
-																		_cellVec2RemoveQueue.push_back(cellvec->getPosition());															
+																		_cellVec2RemoveQueue.insert(_cellVec2RemoveQueue.begin(), (cellvec->convertToWorldSpace(cellvec->getSprite()->getPosition())));
+
 																		if (cellmoveto == nullptr)
 																		{
+																					
 																					cellmoveto = cellvec;
 																		}
 																		
@@ -691,26 +703,38 @@ void CellsLayer::removeUsableCells()
 
 void CellsLayer::swapCells(Cells * sourceCell, Cells * destCell)
 {
+			log("**********************************");
+			log("source:%d,%d,%d  dest:%d,%d,%d", sourceCell->getColumn(), sourceCell->getRow(), sourceCell->getLife(),destCell->getColumn(), destCell->getRow(),destCell->getLife());
 			//交换block 标量属性		
 			auto lifebak = destCell->getLife();
 			auto isSelectedbak = destCell->_isSelected;
 			auto colorbak = destCell->getColor();
 			auto isCanSelected = destCell->isCanSelected();
+			auto isMovintBak = destCell->_isMoving;
+			//sourceCell->pullCellsSprite();
+			sourceCell->getSprite()->setVisible(false);
 
+			destCell->pushMoveVec(sourceCell->_moveVec);
+			sourceCell->_moveVec.clear();
 		
-
-			destCell->setLife(sourceCell->getLife());
+			
+			destCell->pullCellsSprite();
+			destCell->setLife(sourceCell->getLife());	
 			destCell->_isSelected = sourceCell->_isSelected;
 			destCell->_color = sourceCell->getColor();
 			destCell->_isCanSelected = sourceCell->isCanSelected();
+			destCell->_isMoving = sourceCell->_isMoving;
+			destCell->pushCellsSprite(sourceCell);
 			
-		
 
 			sourceCell->setLife(lifebak);
 			sourceCell->_isSelected = isSelectedbak;
 			sourceCell->_color = colorbak;
 			sourceCell->_isCanSelected= isCanSelected;
-
+			sourceCell->_isMoving = isMovintBak;
+			log("source:%d,%d,%d  dest:%d,%d,%d", sourceCell->getColumn(), sourceCell->getRow(), sourceCell->getLife(), destCell->getColumn(), destCell->getRow(), destCell->getLife());
+			log("**********************************");
+			
 }
 
 Cells * CellsLayer::getUsableCell1(std::list<Cells*>::iterator & souceCell, int col, int row)
@@ -1266,7 +1290,7 @@ Vec2 CellsLayer::coordinateToVec2(int col, int row)
 			return vec;
 }
 
-int *CellsLayer::vec2ToCoordinate(Vec2 vec)
+double *CellsLayer::vec2ToCoordinate(Vec2 vec)
 {		
 			transformArr[0] = vec.x / getSingleTiledSize.x - 0.5;
 			transformArr[1] = vec.y / (getSingleTiledSize.y + (tileinterval - 95 * 0.5))-0.5;

@@ -105,18 +105,25 @@ void Cells::pushCellsSprite(Cells *cell)
 			//bool _isUsedLogic{ false };
 			//bool _isTouchBack{ false };
 
-			_isSelected = cell->_isSelected;
+		/*	_isSelected = cell->_isSelected;
 			_color = cell->getColor();
 			_isCanSelected = cell->_isCanSelected;
 			_isUsedLogic = cell->_isUsedLogic;
-			_isTouchBack = cell->_isTouchBack;
+			_isTouchBack = cell->_isTouchBack;*/
 
 			if (_life > 0)
 			{
-						_instance = catchColorForNewSprite();					
+
+						_instance = catchColorForNewSprite();	
+						_instance->setPosition(convertToNodeSpace(cell->convertToWorldSpace(cell->getSprite()->getPosition())) );
+						//_instance = cell->getSprite();
 						addChild(_instance,35);
 						_instance->setGlobalZOrder(getColor() + globalZorder::CellsZorder);
 						_instance->setScale(0.5f);
+						
+						
+					//	auto posbak = vec2ToCoordinate(cell->getPosition());
+					//	log("source:%d,%d moveto: %0.0f,%0.0f",getColumn(),getRow(),posbak[0],posbak[1]);
 						//_instance->setPosition(cell->getPosition());
 			}		
 
@@ -126,11 +133,15 @@ void Cells::pushCellsSprite(Cells *cell)
 
 void Cells::pullCellsSprite()
 {		
-			_isCanSelected = false;
+			if (_instance == nullptr)
+			{
+						return;
+			}
+			//_isCanSelected = false;
 			_instance->removeAllChildrenWithCleanup(true);
 			this->removeChild(_instance, true);
 			_instance = nullptr;
-			setLife(0);
+			//setLife(0);
 			
 }
 
@@ -176,12 +187,15 @@ Sprite *Cells::catchColorForNewSprite()
 
 void Cells::pushMoveVec(std::vector<Vec2> & moveVec)
 {
-			if (_mMoveVec.size())
+			//if (_mMoveVec.size())
+			//{
+			//			_mMoveVec.clear();
+			//}
+			if (moveVec.size())
 			{
-						_mMoveVec.clear();
-			}
-			for (auto vec : moveVec)
-			{					
-						_mMoveVec.pushBack(static_cast<FiniteTimeAction *>(MoveTo::create(1, convertToNodeSpace(vec))));
+						for (auto vec : moveVec)
+						{
+									_moveVec.push_back(vec);
+						}
 			}
 }

@@ -90,7 +90,7 @@ public:
 
 			Vec2 coordinateToVec2(int col, int row);
 			
-			int *vec2ToCoordinate(Vec2 vec);
+			double *vec2ToCoordinate(Vec2 vec);
 
 			void showLightCells(CellsColor col);  //shader light
 			
@@ -138,7 +138,7 @@ public:
 			
 			int _cellScore{ 0 };
 
-			int transformArr[2];
+			double transformArr[2];
 };
 
 
