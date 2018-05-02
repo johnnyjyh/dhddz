@@ -520,9 +520,7 @@ void CellsLayer::preCellsForCol()
 									++cells;
 									++colRecord;
 						}
-
-
-						_isCanRunning = true;
+						
 			}
 
 			
@@ -588,6 +586,7 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 						}
 						else
 						{
+									auto destbak = dest;
 									_cellRemoveQueue.push_back(dest);
 									if (dest->getRow() == 4)
 									{
@@ -596,6 +595,13 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 									dest = getUsableCol(souceCell, col, row + 1);
 									if (dest == nullptr)
 									{
+												//回退移动数组
+												if (_cellRemoveQueue.size())
+												{
+															auto iterCell = std::find(_cellRemoveQueue.begin(), _cellRemoveQueue.end(),destbak);
+															++iterCell;
+															_cellRemoveQueue.erase(iterCell, _cellRemoveQueue.end());
+												}
 												if (abs(col - 1 - (*souceCell)->getColumn()) <= abs(col + 1 - (*souceCell)->getColumn()))
 												{
 															dest = getUsableCol(souceCell, col - 1, row + 1);
@@ -608,6 +614,13 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 
 									if (dest == nullptr)
 									{
+												//回退移动数组
+												if (_cellRemoveQueue.size())
+												{
+															auto iterCell = std::find(_cellRemoveQueue.begin(), _cellRemoveQueue.end(),destbak);
+															++iterCell;
+															_cellRemoveQueue.erase(iterCell, _cellRemoveQueue.end());
+												}
 												if (abs(col + 1 - (*souceCell)->getColumn()) <= abs(col - 1 - (*souceCell)->getColumn()))
 												{
 															dest = getUsableCol(souceCell, col + 1, row + 1);
