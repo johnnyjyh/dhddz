@@ -39,6 +39,36 @@ void Cells::bindCellsSprite(Sprite * sp, CellsColor col, bool isSel)
 			_instance->setScale(0.5f);
 }
 
+void Cells::bindNewCellsSprite(CellsColor color, int col, int row)
+{
+			_color = color;
+			_instance = catchColorForNewSprite();
+			auto pos = coordinateToVec2(col,row);
+			_instance->setPosition(this->convertToNodeSpace(pos));	
+			_instance->setGlobalZOrder(getColor() + globalZorder::CellsZorder);
+			_instance->setScale(0.5f);
+			addChild(_instance, 30);
+			switch (getColor())
+			{
+			case CellsColor::red:										
+			case CellsColor::pink:
+			case CellsColor::yellow:			
+			case CellsColor::green:					
+			case CellsColor::blue:					
+			case CellsColor::blueand:				
+			case CellsColor::purple:
+						setLife(1);
+						_isCanSelected = true;
+						_isMoving = false;				
+						break;
+			case CellsColor::snowBlock:
+						setLife(1);
+						_isCanSelected = false;
+						break;
+			}
+			
+}
+
 void Cells::addPlate()
 {
 			for (int i = 0; i < 4; ++i)
@@ -180,6 +210,8 @@ Sprite *Cells::catchColorForNewSprite()
 						break;
 			case CellsColor::snowBlock:
 						spr = Sprite::createWithSpriteFrameName("operating_obstacle_004.png");
+						break;
+			default:
 						break;
 			}
 			return spr;

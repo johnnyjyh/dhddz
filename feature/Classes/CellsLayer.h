@@ -37,6 +37,8 @@ public:
 
 			void displayCells();
 			bool isCanDestroyCells();
+
+			void destroyAndFillUpCells();
 			void destroyCells();
 			void supplyCells();
 			bool isPreCells();
@@ -45,8 +47,14 @@ public:
 			void preCells1();
 			void preCells2();
 
-			//补格子
+			//移动格子
 			void preCellsForCol();
+
+			//补格子
+			void preCellsDownForCol();
+
+			//补格子内控制函数
+			void fillUpAndMoveCells(Cells *cell);
 			//查询需要移动的格子
 			Cells *getUsableCol(std::list<Cells *>::iterator  &souceCell, int col, int row);
 			//移动需要移动的格子
@@ -90,7 +98,7 @@ public:
 
 			Vec2 coordinateToVec2(int col, int row);
 			
-			double *vec2ToCoordinate(Vec2 vec);
+			int *vec2ToCoordinate(Vec2 vec);
 
 			void showLightCells(CellsColor col);  //shader light
 			
@@ -138,7 +146,7 @@ public:
 			
 			int _cellScore{ 0 };
 
-			double transformArr[2];
+			int transformArr[2];
 };
 
 

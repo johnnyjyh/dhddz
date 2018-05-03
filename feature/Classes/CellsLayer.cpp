@@ -271,11 +271,24 @@ bool CellsLayer::isCanDestroyCells()
 			return ret;
 }
 
+void CellsLayer::destroyAndFillUpCells()
+{
+			_isCanRunning = false;
+			destroyCells();
+			preCellsForCol();
+			//fill up  cells
+			preCellsDownForCol();
+			
+
+			_isCanRunning = true;
+			restoreStalemate();
+}
+
 void CellsLayer::destroyCells()
 {
 			if (isCanDestroyCells())
 			{
-						_isCanRunning = false;
+					
 						//计算分数
 						_cellScore += _touchMoveCells.size();
 						//处理遮挡块
@@ -291,7 +304,7 @@ void CellsLayer::destroyCells()
 						}
 						destroyBarrier();
 						//preCells1();
-						preCellsForCol();
+						
 						//this->preCells2();
 
 						/*if (_desCell.size())
@@ -311,8 +324,7 @@ void CellsLayer::destroyCells()
 									}
 									_desCell.clear();
 						}*/
-						_isCanRunning = true;
-						restoreStalemate();
+						
 			}
 
 }
@@ -499,11 +511,19 @@ void CellsLayer::preCellsForCol()
 																		if (_cellRemoveQueue.size())
 																		{
 
-																					/*	for (auto removecell : _cellRemoveQueue)
-																						{
-																									log("revemo:%d,%d", removecell->getColumn(), removecell->getRow());
-																						}
-																						log("***************************************");*/
+																					/*for (auto removecell : _cellRemoveQueue)
+																					{
+																								log("revemo:%d,%d", removecell->getColumn(), removecell->getRow());
+																					}
+																					log("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
+																					for (auto removecell : _cellRemoveQueue)
+																					{
+																								if (removecell->getLife() > 0)
+																								{
+																											log("revemo:%d,%d", removecell->getColumn(), removecell->getRow());
+																								}
+																					}
+																					log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");*/
 																					//移动需要移动的格子
 																					removeUsableCells();
 
@@ -541,6 +561,15 @@ void CellsLayer::preCellsForCol()
 															{
 																		cell->_moveActionVec.pushBack(MoveTo::create(1.0f,cell->convertToNodeSpace(*moveto)));
 															}
+														/*	if (cell->getColumn() == 4 && cell->getRow() == 2 )
+															{
+																		for (auto movevec : cell->_moveVec)
+																		{
+																					int *pk = vec2ToCoordinate(movevec);
+																					log("%d,%d", pk[0], pk[1]);
+																		}
+															}*/
+															cell->getSprite()->stopAllActions();
 															auto seq = Sequence::create(cell->_moveActionVec);
 															cell->getSprite()->runAction(seq);
 															cell->_moveVec.clear();
@@ -549,6 +578,87 @@ void CellsLayer::preCellsForCol()
 												}
 									}
 						}
+			}
+}
+
+void CellsLayer::preCellsDownForCol()
+{
+			if (_displayCell.size() > 0)
+			{
+						auto colRecord = 0;
+						auto row = 0;
+						for (auto cells = _displayCell.begin(); cells != _displayCell.end();)
+						{
+									row = 0;
+
+									for (auto cell = cells->begin(); cell != cells->end();)
+									{
+
+												if ((*cell) != nullptr && (*cell)->getLife() <= 0)
+												{
+															auto getcell = getUsableCol(cell, (*cell)->getColumn(), (*cell)->getRow());
+															if (getcell != nullptr)
+															{
+																		if (_cellRemoveQueue.size())
+																		{
+
+																					for (auto removecell : _cellRemoveQueue)
+																					{
+																								log("revemo:%d,%d", removecell->getColumn(), removecell->getRow());
+																					}
+																					log("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
+																					//for (auto removecell : _cellRemoveQueue)
+																					//{
+																					//			if (removecell->getLife() > 0)
+																					//			{
+																					//						log("revemo:%d,%d", removecell->getColumn(), removecell->getRow());
+																					//			}
+																					//}
+																					//log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+																					//创建新格子并移动
+																					fillUpAndMoveCells(*cell);
+
+																		}
+
+															}
+															_cellRemoveQueue.clear();
+												}
+
+												++row;
+												++cell;
+
+									}
+									++cells;
+									++colRecord;
+						}
+
+			}
+}
+
+void CellsLayer::fillUpAndMoveCells(Cells *cell)
+{
+			if (_cellRemoveQueue.size())
+			{
+						std::vector<int> cellColRowBak;
+						for (auto cellbak : _cellRemoveQueue)
+						{
+									int num = cellbak->getColumn() * 10 + cellbak->getRow();
+									cellColRowBak.push_back(num);
+						}
+						
+						scheduleOnce([&,cell,cellColRowBak](float dt) 
+						{
+									cell->pullCellsSprite();
+									cell->bindNewCellsSprite(CellsColor::red,cellColRowBak.back()/10, cellColRowBak.back()%10+1);
+									Vector<FiniteTimeAction *> moveto;
+									for (auto colRow=cellColRowBak.rbegin();colRow!=cellColRowBak.rend();++colRow)
+									{
+												moveto.pushBack(MoveTo::create(1,cell->convertToNodeSpace(coordinateToVec2((*colRow) / 10, (*colRow) % 10))));
+									}
+									auto seq = Sequence::create(moveto);
+									cell->getSprite()->runAction(seq);									
+						}, 0,"CellMoveSch");
+						cellColRowBak.clear();						
 			}
 }
 
@@ -716,8 +826,8 @@ void CellsLayer::removeUsableCells()
 
 void CellsLayer::swapCells(Cells * sourceCell, Cells * destCell)
 {
-			log("**********************************");
-			log("source:%d,%d,%d  dest:%d,%d,%d", sourceCell->getColumn(), sourceCell->getRow(), sourceCell->getLife(),destCell->getColumn(), destCell->getRow(),destCell->getLife());
+	
+			//log("source:%d,%d,%d  dest:%d,%d,%d", sourceCell->getColumn(), sourceCell->getRow(), sourceCell->getLife(),destCell->getColumn(), destCell->getRow(),destCell->getLife());
 			//交换block 标量属性		
 			auto lifebak = destCell->getLife();
 			auto isSelectedbak = destCell->_isSelected;
@@ -738,15 +848,18 @@ void CellsLayer::swapCells(Cells * sourceCell, Cells * destCell)
 			destCell->_isCanSelected = sourceCell->isCanSelected();
 			destCell->_isMoving = sourceCell->_isMoving;
 			destCell->pushCellsSprite(sourceCell);
-			
+			//很重要的一步，交换格子后，目标格子获取数据后，把源格子的数据恢复,给予后面需要走到这个格子的源格子，交换信息.
+			sourceCell->getSprite()->setPosition(sourceCell->convertToNodeSpace(sourceCell->getPosition()));
+
+		
 
 			sourceCell->setLife(lifebak);
 			sourceCell->_isSelected = isSelectedbak;
 			sourceCell->_color = colorbak;
 			sourceCell->_isCanSelected= isCanSelected;
 			sourceCell->_isMoving = isMovintBak;
-			log("source:%d,%d,%d  dest:%d,%d,%d", sourceCell->getColumn(), sourceCell->getRow(), sourceCell->getLife(), destCell->getColumn(), destCell->getRow(), destCell->getLife());
-			log("**********************************");
+			//log("source:%d,%d,%d  dest:%d,%d,%d", sourceCell->getColumn(), sourceCell->getRow(), sourceCell->getLife(), destCell->getColumn(), destCell->getRow(), destCell->getLife());
+			//log("**********************************");
 			
 }
 
@@ -1303,7 +1416,7 @@ Vec2 CellsLayer::coordinateToVec2(int col, int row)
 			return vec;
 }
 
-double *CellsLayer::vec2ToCoordinate(Vec2 vec)
+int *CellsLayer::vec2ToCoordinate(Vec2 vec)
 {		
 			transformArr[0] = vec.x / getSingleTiledSize.x - 0.5;
 			transformArr[1] = vec.y / (getSingleTiledSize.y + (tileinterval - 95 * 0.5))-0.5;
@@ -1481,7 +1594,7 @@ void CellsLayer::onTouchMoved(Touch * touch, Event * unused_event)
 			{
 						if (touchlist->getBoundingBox().containsPoint(touch->getLocation()))
 						{
-									if (touchlist->isSelected() || pow(touchlist->getRow() - _touchMoveCells.back()->getRow(), 2) + pow(touchlist->getColumn() - _touchMoveCells.back()->getColumn(), 2) > 2)
+									if (touchlist->getLife()<=0||touchlist->isSelected() || pow(touchlist->getRow() - _touchMoveCells.back()->getRow(), 2) + pow(touchlist->getColumn() - _touchMoveCells.back()->getColumn(), 2) > 2)
 									{
 												break;
 									}
@@ -1533,7 +1646,7 @@ void CellsLayer::onTouchEnded(Touch * touch, Event * unused_event)
 						}
 						if (_touchMoveCells.size())
 						{
-									this->destroyCells();
+									this->destroyAndFillUpCells();
 									_touchMoveCells.clear();
 						}
 			}

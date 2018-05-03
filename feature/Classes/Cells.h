@@ -9,6 +9,7 @@ public:
 			~Cells();
 			static Cells *create();
 			virtual void bindCellsSprite(Sprite *sp, CellsColor col, bool isSel);
+			virtual void bindNewCellsSprite(CellsColor color, int col, int row);
 			virtual void addPlate();
 
 			virtual Sprite *getSprite();
@@ -40,7 +41,14 @@ public:
 						transformArr[1] = vec.y / (getSingleTiledSize.y + (tileinterval - 95 * 0.5)) - 0.5;
 						return transformArr;
 			}
+
+			inline Vec2 coordinateToVec2(int col, int row)
+			{
+						Vec2 vec(getSingleTiledSize.x*(col + 0.5), (getSingleTiledSize.y + (tileinterval - 95 * 0.5))*(row + 0.5));
+						return vec;
+			}
 			//
+
 
 	
 			int _life{1};
@@ -63,7 +71,7 @@ public:
 			std::vector<Vec2> _moveVec;
 			Vector<FiniteTimeAction *> _moveActionVec;
 
-			
+		
 
 
 };

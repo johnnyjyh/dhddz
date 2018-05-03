@@ -49,10 +49,9 @@ enum CellsColor : int
 			normalDiamond,
 };
 
-enum globalZorder :int 
+enum globalZorder :int
 {
-			CellsZorder=30,
-
+			CellsZorder = 30,
 };
 
 enum CellsHealth
