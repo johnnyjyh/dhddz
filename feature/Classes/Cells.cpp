@@ -26,6 +26,7 @@ Cells * Cells::create()
 			return ret;
 }
 
+//deprecated_attribute
 void Cells::bindCellsSprite(Sprite * sp, CellsColor col, bool isSel)
 {
 			_instance = sp;
@@ -41,30 +42,38 @@ void Cells::bindCellsSprite(Sprite * sp, CellsColor col, bool isSel)
 
 void Cells::bindNewCellsSprite(CellsColor color, int col, int row)
 {
-			_color = color;
-			_instance = catchColorForNewSprite();
-			auto pos = coordinateToVec2(col,row);
-			_instance->setPosition(this->convertToNodeSpace(pos));	
-			_instance->setGlobalZOrder(getColor() + globalZorder::CellsZorder);
-			_instance->setScale(0.5f);
-			addChild(_instance, 30);
-			switch (getColor())
+			if (_instance == nullptr)
 			{
-			case CellsColor::red:										
-			case CellsColor::pink:
-			case CellsColor::yellow:			
-			case CellsColor::green:					
-			case CellsColor::blue:					
-			case CellsColor::blueand:				
-			case CellsColor::purple:
-						setLife(1);
-						_isCanSelected = true;
-						_isMoving = false;				
-						break;
-			case CellsColor::snowBlock:
-						setLife(1);
-						_isCanSelected = false;
-						break;
+						_color = color;
+						_instance = catchColorForNewSprite();
+						//auto pos = coordinateToVec2(col, row);
+						//_instance->setPosition(this->convertToNodeSpace(pos));	
+						//_instance->setGlobalZOrder(getColor() + globalZorder::CellsZorder);
+						_instance->setScale(0.5f);
+						this->addChild(_instance, getColor() + globalZorder::CellsZorder);
+						switch (getColor())
+						{
+						case CellsColor::red:
+						case CellsColor::pink:
+						case CellsColor::yellow:
+						case CellsColor::green:
+						case CellsColor::blue:
+						case CellsColor::blueand:
+						case CellsColor::purple:
+									setLife(1);
+									_isCanSelected = true;
+									_isMoving = false;
+									break;
+						case CellsColor::snowBlock:
+									_isSelected = false;
+									setLife(1);
+									_isCanSelected = false;
+									break;
+						}
+			}
+			else
+			{
+
 			}
 			
 }
@@ -169,7 +178,6 @@ void Cells::pullCellsSprite()
 			}
 			//_isCanSelected = false;
 			_instance->removeAllChildrenWithCleanup(true);
-			this->removeChild(_instance, true);
 			_instance = nullptr;
 			//setLife(0);
 			

@@ -109,13 +109,15 @@ bool CellsLayer::init()
 			auto ret = false;
 			do 
 			{
-						initClippingNode();//用于cells区域遮盖分离上部分fight区域
+						//initClippingNode();//用于cells区域遮盖分离上部分fight区域
 #ifdef _Test_
 						
 #endif //_Test_
 						addGreyAndLightShader();
 						//初始化格子模块
+						
 						initCells();
+						
 						displayCells();
 						
 						
@@ -132,43 +134,24 @@ bool CellsLayer::init()
 			return ret;
 }
 
-Cells * CellsLayer::createCells(int randnum)
+Cells * CellsLayer::createRandCells(int random,int col,int row)
 {
-			auto cel = Cells::create();
-			if (randnum < redProbability)
+			Cells *cell = nullptr;
+			cell = Cells::create();
+			if (random < 0 || random>7)
 			{
-						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_red.png"), red, false);
-			}
-			else if (randnum < redProbability + pinkProbability)
-			{
-						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_pink.png"), pink, false);
-			}
-			else if (randnum < redProbability + pinkProbability + yellowProbability)
-			{
-						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_yellow.png"), yellow, false);
-			}
-			else if (randnum < redProbability + pinkProbability + yellowProbability + greenProbability)
-			{
-						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_ green.png"), green, false);
-			}
-			else if (randnum < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability)
-			{
-						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_blue.png"), blue, false);
-			}
-			else if (randnum < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability)
-			{
-						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_blueand.png"), blueand, false);
-			}
-			else if (randnum < redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability)
-			{
-						cel->bindCellsSprite(Sprite::createWithSpriteFrameName("operating_ purple.png"), purple, false);
+						
+						int num = rand() % 7;
+
+						cell->bindNewCellsSprite((CellsColor)num, col, row);
+						
 			}
 			else
 			{
-						static_assert((redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability) == 100, " redProbability + pinkProbability + yellowProbability + greenProbability + blueProbability + blueandProbability + purpleProbability !=100");
+						cell->bindNewCellsSprite((CellsColor)random, col, row);
 			}
 
-			return cel;
+			return cell;
 }
 
 bool CellsLayer::initCells()
@@ -183,20 +166,21 @@ bool CellsLayer::initCells()
 									for (int row = 0; row < 5; ++row)
 									{		
 
-
-												if ((col == 3 || col==2)&& (row == 2 || row ==3))
+												Cells *cell = nullptr;
+												//if ((col == 3 || col==2)&& (row == 2 || row ==3))
+												if (row == 3)
 												{
-															auto bar = BarrierBlock::create();
-															bar->bindBarrierSprite(Sprite::createWithSpriteFrameName("operating_obstacle_004.png"),snowBlock,snowBlockHealth);																													
-															bar->setRow(row);
-															bar->setColumn(col);
-															listtemp.push_back(bar);
-															_snowBlock.push_back(bar);
+
+															cell = createRandCells((int)CellsColor::snowBlock, col, row);
+															cell->setRow(row);
+															cell->setColumn(col);
+															listtemp.push_back(cell);
+															_snowBlock.push_back(cell);
 												}
 												else
 												{
-															auto randnum = rand() % 100;
-															auto cell = createCells(randnum);
+															
+															cell = createRandCells(0, col, row);
 
 															if (cell == nullptr)
 															{
@@ -242,14 +226,14 @@ void CellsLayer::displayCells()
 									//cell->getSprite()->setScale(0.5);								
 #endif //_Test_
 									//cell->getSprite()->setAnchorPoint(Vec2::ZERO);
-									cell->setPosition(Vec2((getSingleTiledSize.x)*(cell->getColumn()+0.5), (getSingleTiledSize.y + (tileinterval - 95 *0.5))*(cell->getRow()+0.5)));
+									cell->setPosition(coordinateToVec2(cell->getColumn(),cell->getRow()));
 									
 									if (cell->getColor() == snowBlock)
 									{
-												_clipNode->addChild(cell, 31);
+												addChild(cell, -2);
 												continue;
 									}
-									_clipNode->addChild(cell,30);
+									addChild(cell,-2);
 									
 						}
 						
@@ -274,9 +258,13 @@ bool CellsLayer::isCanDestroyCells()
 void CellsLayer::destroyAndFillUpCells()
 {
 			_isCanRunning = false;
-			destroyCells();
-			preCellsForCol();
+			if (isCanDestroyCells())
+			{
+						destroyCells();
+						preCellsForCol();
+			}
 			//fill up  cells
+			
 			preCellsDownForCol();
 			
 
@@ -286,46 +274,45 @@ void CellsLayer::destroyAndFillUpCells()
 
 void CellsLayer::destroyCells()
 {
-			if (isCanDestroyCells())
+
+
+			//计算分数
+			_cellScore += _touchMoveCells.size();
+			//处理遮挡块
+			checkBarrier(_touchMoveCells);
+			//处理消除块
+			for (auto desCells : _touchMoveCells)
 			{
-					
-						//计算分数
-						_cellScore += _touchMoveCells.size();
-						//处理遮挡块
-						checkBarrier(_touchMoveCells);										
-						//处理消除块
-						for (auto desCells : _touchMoveCells)
-						{
 
-									desCells->getSprite()->setVisible(false);
-									desCells->_isCanSelected = false;
-									desCells->loseLife();
-									_desCell.push_back(desCells);
-						}
-						destroyBarrier();
-						//preCells1();
-						
-						//this->preCells2();
-
-						/*if (_desCell.size())
-						{
-									for (auto &desCell  : _desCell)
-									{
-												auto iter = _displayCell.begin();
-												for (int i = 0; i < desCell->getColumn(); ++i)
-												{
-															++iter;
-												}
-												auto iterfind = find(iter->begin(), iter->end(), desCell);
-												*iterfind = nullptr;
-												desCell->removeAllChildren();
-												desCell->removeFromParentAndCleanup(true);
-												desCell = nullptr;
-									}
-									_desCell.clear();
-						}*/
-						
+						desCells->getSprite()->setVisible(false);
+						desCells->_isCanSelected = false;
+						desCells->loseLife();
+						_desCell.push_back(desCells);
 			}
+			destroyBarrier();
+			//preCells1();
+
+			//this->preCells2();
+
+			/*if (_desCell.size())
+			{
+						for (auto &desCell  : _desCell)
+						{
+									auto iter = _displayCell.begin();
+									for (int i = 0; i < desCell->getColumn(); ++i)
+									{
+												++iter;
+									}
+									auto iterfind = find(iter->begin(), iter->end(), desCell);
+									*iterfind = nullptr;
+									desCell->removeAllChildren();
+									desCell->removeFromParentAndCleanup(true);
+									desCell = nullptr;
+						}
+						_desCell.clear();
+			}*/
+
+			
 
 }
 
@@ -338,7 +325,7 @@ void CellsLayer::supplyCells()
 			for (int col = _supCell.size(); col < 7; ++col)
 			{
 						auto randcol = (rand() % 100);
-						auto cel = createCells(randcol);
+						auto cel = createRandCells(randcol,0,0);
 						_supCell.push_back(cel);
 			}
 }
@@ -398,7 +385,7 @@ void CellsLayer::preCells()
 																		cel->setRow(row);
 																		cel->setColumn(colRecord);
 																		cel->setPosition(coordinateToVec2(colRecord, 5));
-																		_clipNode->addChild(cel);
+																		addChild(cel);
 																		moveCell(cel, 0, 0, cel->getColumn(), cel->getRow());
 															}
 
@@ -455,6 +442,7 @@ void CellsLayer::preCells2()
 {
 			if (_displayCell.size() > 0)
 			{
+						
 						auto colRecord = 0;
 						auto row = 0;
 						for (auto cells = _displayCell.begin(); cells != _displayCell.end();)
@@ -528,7 +516,14 @@ void CellsLayer::preCellsForCol()
 																					removeUsableCells();
 
 																		}
-																		
+															}
+															else
+															{
+																		for (auto removecell : _cellRemoveQueue)
+																		{
+																		log("revemo:%d,%d", removecell->getColumn(), removecell->getRow());
+																		}
+																		log("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
 															}
 															_cellRemoveQueue.clear();
 												}
@@ -590,7 +585,7 @@ void CellsLayer::preCellsDownForCol()
 						for (auto cells = _displayCell.begin(); cells != _displayCell.end();)
 						{
 									row = 0;
-
+									int time = 0;
 									for (auto cell = cells->begin(); cell != cells->end();)
 									{
 
@@ -616,8 +611,8 @@ void CellsLayer::preCellsDownForCol()
 																					//}
 																					//log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 																					//创建新格子并移动
-																					fillUpAndMoveCells(*cell);
-
+																					fillUpAndMoveCells(*cell,time);
+																					++time;
 																		}
 
 															}
@@ -635,7 +630,7 @@ void CellsLayer::preCellsDownForCol()
 			}
 }
 
-void CellsLayer::fillUpAndMoveCells(Cells *cell)
+void CellsLayer::fillUpAndMoveCells(Cells *cell,float time)
 {
 			if (_cellRemoveQueue.size())
 			{
@@ -646,21 +641,35 @@ void CellsLayer::fillUpAndMoveCells(Cells *cell)
 									cellColRowBak.push_back(num);
 						}
 						
-						scheduleOnce([&,cell,cellColRowBak](float dt) 
+						
+						cell->pullCellsSprite();
+						int numco = rand() % 7;
+						cell->bindNewCellsSprite((CellsColor)0, cellColRowBak.back() / 10, cellColRowBak.back() % 10 + 1);
+						cell->setPosition(coordinateToVec2(cellColRowBak.back() / 10, cellColRowBak.back() % 10 + 1));
+						Vector<FiniteTimeAction *> moveto;
+						
+						for (auto colRow = cellColRowBak.rbegin(); colRow != cellColRowBak.rend(); ++colRow)
 						{
-									cell->pullCellsSprite();
-									cell->bindNewCellsSprite(CellsColor::red,cellColRowBak.back()/10, cellColRowBak.back()%10+1);
-									Vector<FiniteTimeAction *> moveto;
-									for (auto colRow=cellColRowBak.rbegin();colRow!=cellColRowBak.rend();++colRow)
-									{
-												moveto.pushBack(MoveTo::create(1,cell->convertToNodeSpace(coordinateToVec2((*colRow) / 10, (*colRow) % 10))));
-									}
-									auto seq = Sequence::create(moveto);
-									cell->getSprite()->runAction(seq);									
-						}, 0,"CellMoveSch");
-						cellColRowBak.clear();						
+									moveto.pushBack(MoveTo::create(1, (coordinateToVec2((*colRow) / 10, (*colRow) % 10))));
+
+						}
+				
+						auto seq = Sequence::create(moveto);
+						auto seq1 = Sequence::create(DelayTime::create(time), seq,NULL);
+						
+						cell->runAction(seq1);
+
+
+
+						//_clipNode->addChild(cell);
+						moveto.clear();
+						cellColRowBak.clear();
 			}
 }
+
+
+
+
 
 Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col, int row)
 {
@@ -702,7 +711,9 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 									{
 												return dest;
 									}
+									//是否能向上找
 									dest = getUsableCol(souceCell, col, row + 1);
+									//是否能向左找
 									if (dest == nullptr)
 									{
 												//回退移动数组
@@ -721,7 +732,7 @@ Cells *CellsLayer::getUsableCol(std::list<Cells*>::iterator & souceCell, int col
 															dest = getUsableCol(souceCell, col + 1, row + 1);
 												}
 									}
-
+									//是否能向右找
 									if (dest == nullptr)
 									{
 												//回退移动数组
@@ -1347,7 +1358,7 @@ Cells * CellsLayer::findCell(int col, int row)
 Cells * CellsLayer::getNewCellForSupCell()
 {
 			auto randcol = (rand() % 100);
-			auto cel = createCells(randcol);			
+			auto cel = createRandCells(randcol,0,0);			
 			cel->getSprite()->setScale(0.5);
 			return cel;
 }
@@ -1367,6 +1378,7 @@ void CellsLayer::linkLineInGrid(int col1, int row1, int col2, int row2)
 			line->drawLine(pos1, pos2,Color4F::BLACK);
 			
 			_linkLineCache.push_back(line);
+			line->setGlobalZOrder(100);
 			addChild(line,10001);
 }
 
@@ -1523,20 +1535,23 @@ void CellsLayer::addGreyAndLightShader()
 
 void CellsLayer::initClippingNode()
 {
+			
 			_clipNode = ClippingNode::create();
+			_clipNode->retain();
 			_clipNode->setInverted(false);
+			
 			_clipNode->setAlphaThreshold(1.0f);
 
 			auto stencil = Node::create();
-
+			stencil->retain();
 			auto drawnode = DrawNode::create();
 			float coverY = towerArea-10;
 			Vec2 point[4]{ Vec2(0,0),Vec2(0,coverY),Vec2(winSize.width,coverY),Vec2(winSize.width,0) };
 			drawnode->drawPolygon(point, 4, Color4F(1,0,0,1),1,Color4F(0,1,0,1));
+			drawnode->retain();
 			stencil->addChild(drawnode,-1);
 			_clipNode->setStencil(stencil);
 			addChild(_clipNode,-1);
-
 }
 
 

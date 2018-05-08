@@ -8,6 +8,7 @@ public:
 			Cells();
 			~Cells();
 			static Cells *create();
+			//DEPRECATED_ATTRIBUTE
 			virtual void bindCellsSprite(Sprite *sp, CellsColor col, bool isSel);
 			virtual void bindNewCellsSprite(CellsColor color, int col, int row);
 			virtual void addPlate();
@@ -54,7 +55,7 @@ public:
 			int _life{1};
 			bool _isSelected;
 			CellsColor _color;
-			Sprite* _instance;
+			Sprite* _instance{nullptr};
 			bool _isCanSelected{ true };
 			bool _isUsedLogic{ false };
 			bool _isTouchBack{ false };
@@ -70,9 +71,6 @@ public:
 			Vec2 _usablePlatePos[4];
 			std::vector<Vec2> _moveVec;
 			Vector<FiniteTimeAction *> _moveActionVec;
-
-		
-
 
 };
 #endif //__Tiles_H__

@@ -46,7 +46,7 @@ bool GamePlayerScene::init()
 
 			//预加载动画
 			loadAnimate();
-			
+		
 			//初始化玩家信息
 			{
 						_playerInstance = PlayerData::getInstancePlayerData();
@@ -57,7 +57,8 @@ bool GamePlayerScene::init()
 			//添加background
 			
 			initBackGround();
-			
+
+			initClippingNode();
 			
 			//初始化消消乐模块
 			createCellsForPlant();
@@ -158,7 +159,8 @@ bool GamePlayerScene::createCellsForPlant()
 			{
 
 						auto cellLayer = CellsLayer::create();
-						addChild(cellLayer);
+						_clipNode->addChild(cellLayer,200);
+						cellLayer->setPosition(_clipNode->convertToNodeSpace(Point::ZERO) );
 						_layerCells = cellLayer;
 						
 						ret = true;
@@ -183,10 +185,35 @@ bool GamePlayerScene::initBackGround()
 						spr->setScaleY((float)(wy / dy));
 						//log("%lf ,%lf", spr->getTextureRect().getMaxX(), spr->getTextureRect().getMaxY());
 						spr->setPosition(Vec2::ZERO);
-						addChild(spr, 0,"backGround");
+						addChild(spr,1,"backGround");
 						ret = true;
 			} while (0);
 			return true;
+}
+
+void GamePlayerScene::initClippingNode()
+{
+		
+
+			_clipNode = ClippingNode::create();
+
+			_clipNode->setInverted(false);
+
+			_clipNode->setAlphaThreshold(0.0f);
+
+			auto stencil = Node::create();
+
+			auto drawnode = DrawNode::create();
+			float coverY = towerArea - 10;
+			Vec2 point[4]{ Vec2(0,0),Vec2(0,coverY),Vec2(winSize.width,coverY),Vec2(winSize.width,0) };
+			drawnode->drawPolygon(point, 4, Color4F(1, 0, 0, 1), 1, Color4F(0, 1, 0, 1));
+
+			stencil->addChild(drawnode, 1);
+
+			_clipNode->setStencil(stencil);
+
+			addChild(_clipNode, 2);
+	
 }
 
 

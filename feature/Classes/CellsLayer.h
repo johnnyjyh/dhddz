@@ -2,7 +2,7 @@
 #define __CellsLayer_H__
 
 #include "Common.h"
-#include "BarrierBlock.h"
+#include "Cells.h"
 
 
 class CellsLayer:
@@ -23,7 +23,9 @@ public:
 			//控制函数 在 begin 里面开始，move里面判断  ，end里面结算   ，可以8个方向获取格子，3连即消除，但是选择路线前进后，不能回退，不能重复选择
 			//消除的内容 添加到一个链表内，处理完清除链表
 			//游戏过程为，  显示格子->判断消除 ->人工触发->消除格子->补充格子 然后循环
-			Cells *createCells(int randnum);
+			
+			Cells *createRandCells(int random, int col, int row);
+			
 			bool initCells();
 			//检查snowblock
 			auto  checkSnowBlock(std::list<Cells *> &cells);
@@ -54,7 +56,7 @@ public:
 			void preCellsDownForCol();
 
 			//补格子内控制函数
-			void fillUpAndMoveCells(Cells *cell);
+			void fillUpAndMoveCells(Cells *cell, float time);
 			//查询需要移动的格子
 			Cells *getUsableCol(std::list<Cells *>::iterator  &souceCell, int col, int row);
 			//移动需要移动的格子
@@ -110,6 +112,7 @@ public:
 
 			//遮盖技术
 			//选择用clippingNode
+			//deprecated attribute
 			void initClippingNode();
 			
 			
@@ -134,7 +137,7 @@ public:
 			std::list<DrawNode *> _linkLineCache;
 			std::list<Cells *> _touchCells;
 			std::list<Cells *> _touchMoveCells;
-			std::list<BarrierBlock *> _snowBlock;
+			std::list<Cells *> _snowBlock;
 			std::list<Cells *> _hintCells;
 
 			//格子移动处理

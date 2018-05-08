@@ -33,11 +33,8 @@ public:
 
 			bool initBackGround();
 
-
-			
-	
-
-
+			//
+			void GamePlayerScene::initClippingNode();
 
 			void onEnter();  //预用于内存申请 相关域cocos类
 			void onExit();//预用于内存清理 相关域cocos类
@@ -63,7 +60,7 @@ public:
 		
 
 
-
+			ClippingNode *_clipNode{ nullptr };
 			
 			static int gamePath[7];
 
